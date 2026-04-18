@@ -6,7 +6,7 @@ export interface AddressRow {
 }
 
 export interface MailSetting {
-  id: string;
+  id: number;
   eventType: string;
   templateId: string;
   description: string;
@@ -24,7 +24,7 @@ export async function getMailSettings(): Promise<MailSetting[]> {
   return res.json();
 }
 
-export async function getMailSetting(id: string): Promise<MailSetting> {
+export async function getMailSetting(id: number): Promise<MailSetting> {
   const res = await fetch(`${BASE_URL}/api/mailsettings/${id}`);
   if (!res.ok) throw new Error('Failed to fetch mail setting');
   return res.json();
@@ -40,7 +40,7 @@ export async function createMailSetting(input: MailSettingInput): Promise<MailSe
   return res.json();
 }
 
-export async function updateMailSetting(id: string, input: MailSettingInput): Promise<MailSetting> {
+export async function updateMailSetting(id: number, input: MailSettingInput): Promise<MailSetting> {
   const res = await fetch(`${BASE_URL}/api/mailsettings/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -50,7 +50,7 @@ export async function updateMailSetting(id: string, input: MailSettingInput): Pr
   return res.json();
 }
 
-export async function deleteMailSetting(id: string): Promise<void> {
+export async function deleteMailSetting(id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/api/mailsettings/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Failed to delete mail setting');
 }

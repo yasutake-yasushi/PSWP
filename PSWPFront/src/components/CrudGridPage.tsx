@@ -13,7 +13,7 @@ export type ModalMode = 'add' | 'view' | 'edit';
 interface ModalState<T> { open: boolean; mode: ModalMode; item?: T; }
 interface ConfirmState<T> { open: boolean; item?: T; }
 
-export interface CrudGridPageProps<T extends { id: string }, I> {
+export interface CrudGridPageProps<T extends { id: number }, I> {
   /** ページタイトル */
   title: string;
   /** Actions列を除いたカラム定義 */
@@ -23,9 +23,9 @@ export interface CrudGridPageProps<T extends { id: string }, I> {
   /** 新規作成 */
   onCreate: (input: I) => Promise<unknown>;
   /** 更新 */
-  onUpdate: (id: string, input: I) => Promise<unknown>;
+  onUpdate: (id: number, input: I) => Promise<unknown>;
   /** 削除 */
-  onDelete: (id: string) => Promise<unknown>;
+  onDelete: (id: number) => Promise<unknown>;
   /** 削除確認メッセージ */
   getDeleteMessage: (item: T) => string;
   /**
@@ -52,7 +52,7 @@ const actionBtn = (bg: string): React.CSSProperties => ({
   border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600,
 });
 
-function CrudGridPage<T extends { id: string }, I>({
+function CrudGridPage<T extends { id: number }, I>({
   title,
   columnDefs: propColumnDefs,
   fetchAll,

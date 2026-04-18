@@ -19,9 +19,9 @@ namespace PSWPService.Migrations
 
             modelBuilder.Entity("PSWPService.Models.ContractItem", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -57,9 +57,9 @@ namespace PSWPService.Migrations
 
             modelBuilder.Entity("PSWPService.Models.MCA", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateOnly?>("AgreementDate")
                         .HasColumnType("TEXT");
@@ -92,9 +92,9 @@ namespace PSWPService.Migrations
 
             modelBuilder.Entity("PSWPService.Models.MCAPattern", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ContractItems")
                         .IsRequired()
@@ -128,9 +128,9 @@ namespace PSWPService.Migrations
 
             modelBuilder.Entity("PSWPService.Models.MailSetting", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Addresses")
                         .IsRequired()
@@ -165,9 +165,9 @@ namespace PSWPService.Migrations
 
             modelBuilder.Entity("PSWPService.Models.Strategy", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -209,7 +209,6 @@ namespace PSWPService.Migrations
 
                     b.ToTable("SystemSettings");
                 });
-
 #pragma warning restore 612, 618
         }
     }

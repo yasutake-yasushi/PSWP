@@ -2,7 +2,7 @@
 -- Table: ContractItems
 -- ============================================================
 CREATE TABLE IF NOT EXISTS "ContractItems" (
-    "Id"           TEXT NOT NULL CONSTRAINT "PK_ContractItems" PRIMARY KEY,
+    "Id"           INTEGER NOT NULL CONSTRAINT "PK_ContractItems" PRIMARY KEY AUTOINCREMENT,
     "Category"     TEXT NOT NULL,   -- Contract | Trade | CFRoll | Equity | Interest
     "ItemName"     TEXT NOT NULL,
     "DataType"     TEXT NOT NULL,   -- String | Date | Int | Number | Bool | Enum

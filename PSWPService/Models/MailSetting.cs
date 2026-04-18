@@ -2,7 +2,7 @@ namespace PSWPService.Models;
 
 public class MailSetting
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public int Id { get; set; }
 
     /// <summary>OTCCross / StockList / PreConfirmation</summary>
     public string EventType { get; set; } = string.Empty;

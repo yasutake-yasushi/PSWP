@@ -19,8 +19,8 @@ public class MailSettingsController : ControllerBase
         => Ok(await _db.MailSettings.OrderBy(m => m.EventType).ThenBy(m => m.TemplateId).ToListAsync());
 
     // GET api/mailsettings/{id}
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var item = await _db.MailSettings.FindAsync(id);
         return item is null ? NotFound() : Ok(item);
@@ -30,7 +30,6 @@ public class MailSettingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MailSetting item)
     {
-        item.Id = Guid.NewGuid();
         item.CreatedAt = DateTime.UtcNow;
         item.UpdatedAt = DateTime.UtcNow;
         _db.MailSettings.Add(item);
@@ -39,8 +38,8 @@ public class MailSettingsController : ControllerBase
     }
 
     // PUT api/mailsettings/{id}
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] MailSetting updated)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] MailSetting updated)
     {
         var item = await _db.MailSettings.FindAsync(id);
         if (item is null) return NotFound();
@@ -57,8 +56,8 @@ public class MailSettingsController : ControllerBase
     }
 
     // DELETE api/mailsettings/{id}
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var item = await _db.MailSettings.FindAsync(id);
         if (item is null) return NotFound();

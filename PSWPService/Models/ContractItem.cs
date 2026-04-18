@@ -2,7 +2,7 @@ namespace PSWPService.Models;
 
 public class ContractItem
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public int Id { get; set; }
     public string Category { get; set; } = string.Empty;
     public string ItemName { get; set; } = string.Empty;
     public string DataType { get; set; } = string.Empty;

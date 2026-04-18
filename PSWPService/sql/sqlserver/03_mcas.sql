@@ -4,7 +4,7 @@
 IF OBJECT_ID(N'[dbo].[MCA]', N'U') IS NULL
 BEGIN
     CREATE TABLE [dbo].[MCA] (
-        [Id]            NVARCHAR(MAX)  NOT NULL CONSTRAINT [PK_MCA] PRIMARY KEY,
+        [Id]            INT             NOT NULL IDENTITY(1,1) CONSTRAINT [PK_MCA] PRIMARY KEY,
         [McaId]         NVARCHAR(MAX)  NOT NULL,
         [Cpty]          NVARCHAR(MAX)  NOT NULL,
         [AgreementDate] NVARCHAR(MAX)  NULL,       -- DateOnly (nullable), format: YYYY-MM-DD

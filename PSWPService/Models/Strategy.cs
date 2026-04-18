@@ -2,7 +2,7 @@ namespace PSWPService.Models;
 
 public class Strategy
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public int Id { get; set; }
 
     /// <summary>Lending / Borrowing / Funding / Self Funding</summary>
     public string StrategyType { get; set; } = string.Empty;

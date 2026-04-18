@@ -16,8 +16,8 @@ public class MCAPatternsController : ControllerBase
     public async Task<IActionResult> GetAll()
         => Ok(await _db.MCAPatterns.OrderBy(p => p.McaPatternId).ToListAsync());
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var item = await _db.MCAPatterns.FindAsync(id);
         return item is null ? NotFound() : Ok(item);
@@ -26,7 +26,6 @@ public class MCAPatternsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MCAPattern item)
     {
-        item.Id = Guid.NewGuid();
         item.CreatedAt = DateTime.UtcNow;
         item.UpdatedAt = DateTime.UtcNow;
         _db.MCAPatterns.Add(item);
@@ -34,8 +33,8 @@ public class MCAPatternsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] MCAPattern updated)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] MCAPattern updated)
     {
         var item = await _db.MCAPatterns.FindAsync(id);
         if (item is null) return NotFound();
@@ -49,8 +48,8 @@ public class MCAPatternsController : ControllerBase
         return Ok(item);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var item = await _db.MCAPatterns.FindAsync(id);
         if (item is null) return NotFound();

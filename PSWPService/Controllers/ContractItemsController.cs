@@ -19,8 +19,8 @@ public class ContractItemsController : ControllerBase
         => Ok(await _db.ContractItems.OrderBy(c => c.Category).ThenBy(c => c.ItemName).ToListAsync());
 
     // GET api/contractitems/{id}
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var item = await _db.ContractItems.FindAsync(id);
         return item is null ? NotFound() : Ok(item);
@@ -30,7 +30,6 @@ public class ContractItemsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ContractItem item)
     {
-        item.Id = Guid.NewGuid();
         item.CreatedAt = DateTime.UtcNow;
         item.UpdatedAt = DateTime.UtcNow;
         _db.ContractItems.Add(item);
@@ -39,8 +38,8 @@ public class ContractItemsController : ControllerBase
     }
 
     // PUT api/contractitems/{id}
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] ContractItem updated)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] ContractItem updated)
     {
         var item = await _db.ContractItems.FindAsync(id);
         if (item is null) return NotFound();
@@ -58,8 +57,8 @@ public class ContractItemsController : ControllerBase
     }
 
     // DELETE api/contractitems/{id}
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var item = await _db.ContractItems.FindAsync(id);
         if (item is null) return NotFound();

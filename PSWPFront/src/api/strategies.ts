@@ -1,7 +1,7 @@
 const BASE_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:5232';
 
 export interface Strategy {
-  id: string;
+  id: number;
   strategyType: string;
   portId: string;
   createdAt: string;
@@ -26,7 +26,7 @@ export async function createStrategy(input: StrategyInput): Promise<Strategy> {
   return res.json();
 }
 
-export async function updateStrategy(id: string, input: StrategyInput): Promise<Strategy> {
+export async function updateStrategy(id: number, input: StrategyInput): Promise<Strategy> {
   const res = await fetch(`${BASE_URL}/api/strategies/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -36,7 +36,7 @@ export async function updateStrategy(id: string, input: StrategyInput): Promise<
   return res.json();
 }
 
-export async function deleteStrategy(id: string): Promise<void> {
+export async function deleteStrategy(id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/api/strategies/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Failed to delete strategy');
 }

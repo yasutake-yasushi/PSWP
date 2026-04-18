@@ -4,7 +4,7 @@
 IF OBJECT_ID(N'[dbo].[MailSettings]', N'U') IS NULL
 BEGIN
     CREATE TABLE [dbo].[MailSettings] (
-        [Id]          NVARCHAR(MAX)  NOT NULL CONSTRAINT [PK_MailSettings] PRIMARY KEY,
+        [Id]          INT             NOT NULL IDENTITY(1,1) CONSTRAINT [PK_MailSettings] PRIMARY KEY,
         [EventType]   NVARCHAR(MAX)  NOT NULL,   -- OTCCross | StockList | PreConfirmation
         [TemplateId]  NVARCHAR(MAX)  NOT NULL,
         [Description] NVARCHAR(MAX)  NOT NULL,

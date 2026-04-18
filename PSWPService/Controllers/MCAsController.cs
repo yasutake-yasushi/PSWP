@@ -19,8 +19,8 @@ public class MCAsController : ControllerBase
         => Ok(await _db.MCAs.OrderBy(m => m.McaId).ToListAsync());
 
     // GET api/mcas/{id}
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var item = await _db.MCAs.FindAsync(id);
         return item is null ? NotFound() : Ok(item);
@@ -30,7 +30,6 @@ public class MCAsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MCA item)
     {
-        item.Id = Guid.NewGuid();
         item.CreatedAt = DateTime.UtcNow;
         item.UpdatedAt = DateTime.UtcNow;
         _db.MCAs.Add(item);
@@ -39,8 +38,8 @@ public class MCAsController : ControllerBase
     }
 
     // PUT api/mcas/{id}
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] MCA updated)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] MCA updated)
     {
         var item = await _db.MCAs.FindAsync(id);
         if (item is null) return NotFound();
@@ -57,8 +56,8 @@ public class MCAsController : ControllerBase
     }
 
     // DELETE api/mcas/{id}
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var item = await _db.MCAs.FindAsync(id);
         if (item is null) return NotFound();

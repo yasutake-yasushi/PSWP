@@ -2,7 +2,7 @@
 -- Table: MailSettings
 -- ============================================================
 CREATE TABLE IF NOT EXISTS "MailSettings" (
-    "Id"          TEXT NOT NULL CONSTRAINT "PK_MailSettings" PRIMARY KEY,
+    "Id"          INTEGER NOT NULL CONSTRAINT "PK_MailSettings" PRIMARY KEY AUTOINCREMENT,
     "EventType"   TEXT NOT NULL,  -- OTCCross | StockList | PreConfirmation
     "TemplateId"  TEXT NOT NULL,
     "Description" TEXT NOT NULL,

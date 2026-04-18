@@ -2,7 +2,7 @@
 -- Table: MCA  (entity: MCA)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS "MCA" (
-    "Id"            TEXT NOT NULL CONSTRAINT "PK_MCA" PRIMARY KEY,
+    "Id"            INTEGER NOT NULL CONSTRAINT "PK_MCA" PRIMARY KEY AUTOINCREMENT,
     "McaId"         TEXT NOT NULL,
     "Cpty"          TEXT NOT NULL,
     "AgreementDate" TEXT,           -- DateOnly (nullable), format: YYYY-MM-DD
