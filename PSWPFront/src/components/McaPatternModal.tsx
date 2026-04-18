@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { McaPattern, McaPatternInput, ItemValueRow } from '../api/mcaPatterns';
 import { Mca } from '../api/mcas';
+import { ContractItem } from '../api/contractItems';
 import './ContractItemModal.css';
 import './McaPatternModal.css';
 
@@ -9,7 +10,8 @@ export type ModalMode = 'add' | 'view' | 'edit';
 interface Props {
   mode: ModalMode;
   item?: McaPattern;
-  mcas: Mca[];              // full MCA list
+  mcas: Mca[];
+  contractItemMaster: ContractItem[];  // master list with category info
   onClose: () => void;
   onSave: (input: McaPatternInput) => Promise<void>;
 }
@@ -24,7 +26,7 @@ const parseRows = (json: string): ItemValueRow[] => {
   try { return JSON.parse(json); } catch { return []; }
 };
 
-const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, onClose, onSave }) => {
+const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster, onClose, onSave }) => {
   const [patternId, setPatternId] = useState('');
   const [mcaId, setMcaId] = useState('');
   const [contractRows, setContractRows] = useState<ItemValueRow[]>([]);
@@ -53,7 +55,7 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, onClose, onSave })
     setError(null);
   }, [item]);
 
-  // MCA ID selection handler: populate Contract rows from the selected MCA's contract items
+  // MCA ID selection handler: populate Contract/Trade rows based on category
   const handleMcaIdChange = (selectedMcaId: string) => {
     setMcaId(selectedMcaId);
     if (!selectedMcaId) return;
@@ -61,10 +63,20 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, onClose, onSave })
     if (!found) return;
     try {
       const names: string[] = JSON.parse(found.contractItems);
-      // Merge: keep existing values for matching itemNames, add new rows for new items
+      // Build a category lookup from master
+      const categoryOf = Object.fromEntries(
+        contractItemMaster.map(ci => [ci.itemName, ci.category])
+      );
+      const contractNames = names.filter(n => categoryOf[n] === 'Contract');
+      const tradeNames    = names.filter(n => categoryOf[n] !== 'Contract');
+
       setContractRows(prev => {
-        const valueMap = Object.fromEntries(prev.map(r => [r.itemName, r.value]));
-        return names.map(n => ({ itemName: n, value: valueMap[n] ?? '' }));
+        const vm = Object.fromEntries(prev.map(r => [r.itemName, r.value]));
+        return contractNames.map(n => ({ itemName: n, value: vm[n] ?? '' }));
+      });
+      setTradeRows(prev => {
+        const vm = Object.fromEntries(prev.map(r => [r.itemName, r.value]));
+        return tradeNames.map(n => ({ itemName: n, value: vm[n] ?? '' }));
       });
     } catch { /* ignore */ }
   };

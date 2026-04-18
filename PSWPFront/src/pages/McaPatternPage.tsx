@@ -15,6 +15,7 @@ import {
   deleteMcaPattern,
 } from '../api/mcaPatterns';
 import { getMcas, Mca } from '../api/mcas';
+import { getContractItems, ContractItem } from '../api/contractItems';
 import McaPatternModal, { ModalMode } from '../components/McaPatternModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 
@@ -27,14 +28,16 @@ const McaPatternPage: React.FC = () => {
   const gridRef = useRef<AgGridReact<McaPattern>>(null);
   const [rowData, setRowData] = useState<McaPattern[]>([]);
   const [mcaList, setMcaList] = useState<Mca[]>([]);
+  const [contractItemList, setContractItemList] = useState<ContractItem[]>([]);
   const [modal, setModal] = useState<ModalState>({ open: false, mode: 'add' });
   const [confirm, setConfirm] = useState<ConfirmState>({ open: false });
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Fetch MCA list for dropdown
+  // Fetch MCA list and ContractItem list for modal
   useEffect(() => {
     getMcas().then(list => setMcaList(list)).catch(() => {});
+    getContractItems().then(list => setContractItemList(list)).catch(() => {});
   }, []);
 
   const ActionCellRenderer = useCallback((params: ICellRendererParams<McaPattern>) => {
@@ -149,6 +152,7 @@ const McaPatternPage: React.FC = () => {
           mode={modal.mode}
           item={modal.item}
           mcas={mcaList}
+          contractItemMaster={contractItemList}
           onClose={() => setModal({ open: false, mode: 'add' })}
           onSave={handleSave}
         />
