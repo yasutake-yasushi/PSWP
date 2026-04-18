@@ -29,9 +29,9 @@ const ALNUM_RE = /^[A-Za-z0-9]*$/;
 const ALNUM_MULTI_RE = /^[A-Za-z0-9\n,]*$/;
 
 const TITLE: Record<ModalMode, string> = {
-  add: '行追加',
-  view: '参照',
-  edit: '更新',
+  add: 'Add',
+  view: 'View',
+  edit: 'Edit',
 };
 
 const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
@@ -68,8 +68,8 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.category.trim()) { setError('Category は必須です'); return; }
-    if (!form.itemName.trim()) { setError('Item Name は必須です'); return; }
+    if (!form.category.trim()) { setError('Category is required'); return; }
+    if (!form.itemName.trim()) { setError('Item Name is required'); return; }
     setSaving(true);
     setError(null);
     try {
@@ -101,7 +101,7 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
               onChange={e => handleChange('category', e.target.value)}
               disabled={readonly}
             >
-              <option value="">-- 選択してください --</option>
+              <option value="">-- Select --</option>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </Field>
@@ -150,7 +150,7 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
               onChange={e => handleChange('description', e.target.value)}
               readOnly={readonly}
               rows={3}
-              placeholder="説明を入力"
+              placeholder="Enter description"
             />
           </Field>
 
@@ -158,11 +158,11 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
 
           <div className="modal-footer">
             <button type="button" className="btn-secondary" onClick={onClose}>
-              {readonly ? '閉じる' : 'Cancel'}
+              {readonly ? 'Close' : 'Cancel'}
             </button>
             {!readonly && (
               <button type="submit" className="btn-primary" disabled={saving}>
-                {saving ? '保存中...' : 'OK'}
+                {saving ? 'Saving...' : 'OK'}
               </button>
             )}
           </div>

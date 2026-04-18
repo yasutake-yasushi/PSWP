@@ -39,23 +39,13 @@ const ContractItemPage: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   // ---- アクションボタン セルレンダラー ----
-  // ピン留め下部行のとき → 「＋ 行追加」ボタン、通常行のとき → 参照/更新/削除
   const ActionCellRenderer = useCallback((params: ICellRendererParams<ContractItem>) => {
-    if (params.node.rowPinned === 'bottom') {
-      return (
-        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-          <button style={addRowBtn} onClick={() => setModal({ open: true, mode: 'add' })}>
-            ＋ 行追加
-          </button>
-        </div>
-      );
-    }
     const item = params.data!;
     return (
       <div style={{ display: 'flex', gap: 4, alignItems: 'center', height: '100%' }}>
-        <button style={actionBtn('#4e9af1')} onClick={() => setModal({ open: true, mode: 'view', item })}>参照</button>
-        <button style={actionBtn('#27ae60')} onClick={() => setModal({ open: true, mode: 'edit', item })}>更新</button>
-        <button style={actionBtn('#e74c3c')} onClick={() => setConfirm({ open: true, item })}>削除</button>
+        <button style={actionBtn('#4e9af1')} onClick={() => setModal({ open: true, mode: 'view', item })}>View</button>
+        <button style={actionBtn('#27ae60')} onClick={() => setModal({ open: true, mode: 'edit', item })}>Edit</button>
+        <button style={actionBtn('#e74c3c')} onClick={() => setConfirm({ open: true, item })}>Delete</button>
       </div>
     );
   }, []);
@@ -77,7 +67,7 @@ const ContractItemPage: React.FC = () => {
     { field: 'defaultValue', headerName: 'Default Value', flex: 1,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'description',  headerName: 'Description',   flex: 2,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
     {
-      headerName: '操作',
+      headerName: 'Actions',
       width: 180,
       sortable: false,
       filter: false,
@@ -134,7 +124,8 @@ const ContractItemPage: React.FC = () => {
       {/* ヘッダー */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <h2 style={{ flex: 1, fontSize: '1.1rem' }}>Contract Item</h2>
-        <button style={toolbarBtn('#4e9af1')} onClick={loadData}>更新</button>
+        <button style={toolbarBtn('#4e9af1')} onClick={loadData}>⟳ Reload</button>
+        <button style={toolbarBtn('#27ae60')} onClick={() => setModal({ open: true, mode: 'add' })}>+ Add Row</button>
       </div>
 
       {error && (
@@ -156,11 +147,7 @@ const ContractItemPage: React.FC = () => {
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
           onGridReady={onGridReady}
-          pinnedBottomRowData={[{}] as any}
-          getRowStyle={params => params.node.rowPinned === 'bottom'
-            ? { background: '#f0f7ff', fontWeight: 500 }
-            : undefined
-          }
+
           pagination
           paginationPageSize={25}
           paginationPageSizeSelector={[10, 25, 50, 100]}
@@ -183,8 +170,8 @@ const ContractItemPage: React.FC = () => {
       {/* 削除確認ダイアログ */}
       {confirm.open && confirm.item && (
         <ConfirmDialog
-          title="削除確認"
-          message={`「${confirm.item.itemName}」を削除してもよろしいですか？\nこの操作は元に戻せません。`}
+          title="Delete Confirmation"
+          message={`Are you sure you want to delete "${confirm.item.itemName}"?\nThis action cannot be undone.`}
           onCancel={() => setConfirm({ open: false })}
           onConfirm={handleDeleteConfirm}
           loading={deleting}
@@ -198,12 +185,6 @@ const toolbarBtn = (bg: string): React.CSSProperties => ({
   padding: '6px 14px', background: bg, color: '#fff',
   border: 'none', borderRadius: 4, cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem',
 });
-
-const addRowBtn: React.CSSProperties = {
-  padding: '3px 14px', background: '#27ae60', color: '#fff',
-  border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700,
-  letterSpacing: '0.3px',
-};
 
 const actionBtn = (bg: string): React.CSSProperties => ({
   padding: '2px 8px', background: bg, color: '#fff',

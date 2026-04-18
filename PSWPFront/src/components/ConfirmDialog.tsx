@@ -19,9 +19,9 @@ const ConfirmDialog: React.FC<Props> = ({ title, message, onCancel, onConfirm, l
         ))}
       </div>
       <div className="confirm-footer">
-        <button className="btn-secondary" onClick={onCancel} disabled={loading}>キャンセル</button>
+        <button className="btn-secondary" onClick={onCancel} disabled={loading}>Cancel</button>
         <button className="btn-danger" onClick={onConfirm} disabled={loading}>
-          {loading ? '削除中...' : '削除する'}
+          {loading ? 'Deleting...' : 'Delete'}
         </button>
       </div>
     </div>
