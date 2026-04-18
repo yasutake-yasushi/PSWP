@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<ContractItem> ContractItems => Set<ContractItem>();
     public DbSet<Mca> Mcas => Set<Mca>();
+    public DbSet<McaPattern> McaPatterns => Set<McaPattern>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

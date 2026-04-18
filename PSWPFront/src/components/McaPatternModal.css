@@ -1,0 +1,90 @@
+/* Tab bar */
+.mcp-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #d0d5dd;
+  margin-bottom: 0;
+}
+
+.mcp-tab {
+  padding: 6px 18px;
+  background: #f3f4f6;
+  border: 1px solid #d0d5dd;
+  border-bottom: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  border-radius: 4px 4px 0 0;
+  margin-right: 2px;
+}
+
+.mcp-tab.active {
+  background: #fff;
+  color: #1a56db;
+  font-weight: 700;
+  border-bottom: 2px solid #fff;
+  margin-bottom: -2px;
+}
+
+/* Tab content area */
+.mcp-tab-body {
+  border: 1px solid #d0d5dd;
+  border-top: none;
+  padding: 10px;
+  min-height: 160px;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 8px;
+}
+
+/* Item/Value table */
+.iv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.iv-table th {
+  text-align: left;
+  padding: 4px 6px;
+  background: #f3f4f6;
+  border: 1px solid #d0d5dd;
+  font-weight: 600;
+  color: #444;
+}
+
+.iv-table td {
+  padding: 3px 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.iv-input {
+  width: 100%;
+  padding: 3px 6px;
+  border: 1px solid #d0d5dd;
+  border-radius: 3px;
+  font-size: 0.84rem;
+  box-sizing: border-box;
+}
+
+.iv-input:read-only {
+  background: #f9fafb;
+  color: #555;
+}
+
+/* Special notes textarea */
+.iv-textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #d0d5dd;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.iv-textarea:read-only {
+  background: #f9fafb;
+  color: #555;
+}
