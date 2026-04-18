@@ -4,7 +4,8 @@ export interface SystemSetting {
   id: number;
   mipsFilePath: string;
   strikeFilePath: string;
-  updatedAt: string;
+  updateUser: string;
+  updateTime: string;
 }
 
 export async function getSystemSetting(): Promise<SystemSetting> {

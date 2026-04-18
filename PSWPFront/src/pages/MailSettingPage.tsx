@@ -25,6 +25,10 @@ const MailSettingPage: React.FC = () => {
     { field: 'eventType',   headerName: 'Event Type',   flex: 1.5, sortable: true, filter: 'agSetColumnFilter',  resizable: true },
     { field: 'templateId',  headerName: 'Template ID',  flex: 1.5, sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'description', headerName: 'Description',  flex: 3,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'updateUser',  headerName: 'Update User',  width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'updateTime',  headerName: 'Update Time',  width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
+      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
+    },
   ], []);
 
   return (

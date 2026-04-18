@@ -3,12 +3,12 @@
 -- ============================================================
 CREATE TABLE IF NOT EXISTS "ContractItems" (
     "Id"           INTEGER NOT NULL CONSTRAINT "PK_ContractItems" PRIMARY KEY AUTOINCREMENT,
-    "Category"     TEXT NOT NULL,   -- Contract | Trade | CFRoll | Equity | Interest
-    "ItemName"     TEXT NOT NULL,
-    "DataType"     TEXT NOT NULL,   -- String | Date | Int | Number | Bool | Enum
+    "Category"     VARCHAR(16)  NOT NULL,   -- Contract | Trade | CFRoll | Equity | Interest
+    "ItemName"     VARCHAR(32)  NOT NULL,
+    "DataType"     VARCHAR(16)  NOT NULL,   -- String | Date | Int | Number | Bool | Enum
     "Values"       TEXT,            -- newline-separated list (used for Bool/Enum)
-    "DefaultValue" TEXT,
+    "DefaultValue" VARCHAR(32),
     "Description"  TEXT,
-    "CreatedAt"    TEXT NOT NULL,
-    "UpdatedAt"    TEXT NOT NULL
+    "UpdateUser"   VARCHAR(32) NOT NULL,
+    "UpdateTime"   DATETIME    NOT NULL
 );

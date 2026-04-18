@@ -8,11 +8,11 @@ export interface ContractItem {
   values?: string;
   defaultValue?: string;
   description?: string;
-  createdAt: string;
-  updatedAt: string;
+  updateUser: string;
+  updateTime: string;
 }
 
-export type ContractItemInput = Omit<ContractItem, 'id' | 'createdAt' | 'updatedAt'>;
+export type ContractItemInput = Omit<ContractItem, 'id' | 'updateUser' | 'updateTime'>;
 
 export async function getContractItems(): Promise<ContractItem[]> {
   const res = await fetch(`${BASE_URL}/api/contractitems`);

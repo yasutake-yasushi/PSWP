@@ -4,7 +4,8 @@ import { getSystemSetting, updateSystemSetting } from '../api/systemSetting';
 const SystemSettingPage: React.FC = () => {
   const [mipsFilePath, setMipsFilePath]     = useState('');
   const [strikeFilePath, setStrikeFilePath] = useState('');
-  const [updatedAt, setUpdatedAt]           = useState<string | null>(null);
+  const [updateUser, setUpdateUser]         = useState<string | null>(null);
+  const [updateTime, setUpdateTime]         = useState<string | null>(null);
   const [loading, setLoading]               = useState(false);
   const [saving, setSaving]                 = useState(false);
   const [error, setError]                   = useState<string | null>(null);
@@ -18,7 +19,8 @@ const SystemSettingPage: React.FC = () => {
       const data = await getSystemSetting();
       setMipsFilePath(data.mipsFilePath ?? '');
       setStrikeFilePath(data.strikeFilePath ?? '');
-      setUpdatedAt(data.updatedAt ?? null);
+      setUpdateUser(data.updateUser ?? null);
+      setUpdateTime(data.updateTime ?? null);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -35,7 +37,8 @@ const SystemSettingPage: React.FC = () => {
     setSaved(false);
     try {
       const data = await updateSystemSetting({ mipsFilePath, strikeFilePath });
-      setUpdatedAt(data.updatedAt);
+      setUpdateUser(data.updateUser ?? null);
+      setUpdateTime(data.updateTime ?? null);
       setSaved(true);
     } catch (e: any) {
       setError(e.message);
@@ -82,9 +85,9 @@ const SystemSettingPage: React.FC = () => {
             />
           </div>
 
-          {updatedAt && (
+          {updateTime && (
             <div style={{ fontSize: '0.78rem', color: '#888', marginBottom: 16 }}>
-              Last updated: {new Date(updatedAt).toLocaleString()}
+              Last updated by {updateUser ?? 'anonymous'}: {new Date(updateTime).toLocaleString()}
             </div>
           )}
 

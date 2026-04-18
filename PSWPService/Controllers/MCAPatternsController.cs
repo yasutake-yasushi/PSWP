@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSWPService.Data;
+using PSWPService.Helpers;
 using PSWPService.Models;
 
 namespace PSWPService.Controllers;
@@ -26,8 +27,8 @@ public class MCAPatternsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MCAPattern item)
     {
-        item.CreatedAt = DateTime.UtcNow;
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime = DateTime.UtcNow;
         _db.MCAPatterns.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
@@ -43,7 +44,8 @@ public class MCAPatternsController : ControllerBase
         item.ContractItems = updated.ContractItems;
         item.TradeItems = updated.TradeItems;
         item.SpecialNotes = updated.SpecialNotes;
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime = DateTime.UtcNow;
         await _db.SaveChangesAsync();
         return Ok(item);
     }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PSWPService.Data;
+using PSWPService.Helpers;
 using PSWPService.Models;
 
 namespace PSWPService.Controllers;
@@ -21,6 +22,8 @@ public class SystemSettingController : ControllerBase
         {
             // 初回アクセス時に空レコードを自動生成
             item = new SystemSetting { Id = 1 };
+            item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+            item.UpdateTime = DateTime.UtcNow;
             _db.SystemSettings.Add(item);
             await _db.SaveChangesAsync();
         }
@@ -39,7 +42,8 @@ public class SystemSettingController : ControllerBase
         }
         item.MipsFilePath   = updated.MipsFilePath;
         item.StrikeFilePath = updated.StrikeFilePath;
-        item.UpdatedAt      = DateTime.UtcNow;
+        item.UpdateUser     = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime     = DateTime.UtcNow;
         await _db.SaveChangesAsync();
         return Ok(item);
     }

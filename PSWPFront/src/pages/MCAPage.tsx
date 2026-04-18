@@ -38,6 +38,10 @@ const MCAPage: React.FC = () => {
         catch { return value ?? ''; }
       },
     },
+    { field: 'updateUser', headerName: 'Update User', width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'updateTime', headerName: 'Update Time', width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
+      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
+    },
   ], []);
 
   return (

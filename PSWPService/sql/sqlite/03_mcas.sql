@@ -3,11 +3,11 @@
 -- ============================================================
 CREATE TABLE IF NOT EXISTS "MCA" (
     "Id"            INTEGER NOT NULL CONSTRAINT "PK_MCA" PRIMARY KEY AUTOINCREMENT,
-    "McaId"         TEXT NOT NULL,
-    "Cpty"          TEXT NOT NULL,
-    "AgreementDate" TEXT,           -- DateOnly (nullable), format: YYYY-MM-DD
-    "ExecutionDate" TEXT,           -- DateOnly (nullable), format: YYYY-MM-DD
+    "McaId"         VARCHAR(32)  NOT NULL,
+    "Cpty"          VARCHAR(16)  NOT NULL,
+    "AgreementDate" DATETIME,           -- DateOnly (nullable), format: YYYY-MM-DD
+    "ExecutionDate" DATETIME,           -- DateOnly (nullable), format: YYYY-MM-DD
     "ContractItems" TEXT NOT NULL,  -- JSON: string[]  e.g. ["PaymentTerm","Notional"]
-    "CreatedAt"     TEXT NOT NULL,
-    "UpdatedAt"     TEXT NOT NULL
+    "UpdateUser"    VARCHAR(32) NOT NULL,
+    "UpdateTime"    DATETIME    NOT NULL
 );

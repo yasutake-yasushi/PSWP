@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSWPService.Data;
+using PSWPService.Helpers;
 using PSWPService.Models;
 
 namespace PSWPService.Controllers;
@@ -30,8 +31,8 @@ public class ContractItemsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ContractItem item)
     {
-        item.CreatedAt = DateTime.UtcNow;
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime = DateTime.UtcNow;
         _db.ContractItems.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
@@ -50,7 +51,8 @@ public class ContractItemsController : ControllerBase
         item.Values = updated.Values;
         item.DefaultValue = updated.DefaultValue;
         item.Description = updated.Description;
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
         return Ok(item);

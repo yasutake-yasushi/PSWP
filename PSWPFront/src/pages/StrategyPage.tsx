@@ -24,6 +24,10 @@ const StrategyPage: React.FC = () => {
     },
     { field: 'strategyType', headerName: 'Strategy', flex: 1.5, sortable: true, filter: 'agSetColumnFilter',  resizable: true },
     { field: 'portId',       headerName: 'Port ID',  flex: 2,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'updateUser',   headerName: 'Update User', width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'updateTime',   headerName: 'Update Time', width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
+      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
+    },
   ], []);
 
   return (

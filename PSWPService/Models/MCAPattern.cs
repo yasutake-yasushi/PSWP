@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PSWPService.Models;
@@ -6,7 +7,11 @@ namespace PSWPService.Models;
 public class MCAPattern
 {
     public int Id { get; set; }
+
+    [MaxLength(32)]
     public string McaPatternId { get; set; } = string.Empty;
+
+    [MaxLength(32)]
     public string McaId { get; set; } = string.Empty;
 
     /// <summary>JSON array of {itemName, value} for Contract tab</summary>
@@ -17,6 +22,7 @@ public class MCAPattern
 
     public string? SpecialNotes { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    [MaxLength(32)]
+    public string UpdateUser { get; set; } = string.Empty;
+    public DateTime UpdateTime { get; set; } = DateTime.UtcNow;
 }

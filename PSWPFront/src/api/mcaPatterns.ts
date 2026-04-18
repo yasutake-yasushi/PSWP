@@ -10,8 +10,8 @@ export interface MCAPattern {
   contractItems: string; // JSON: ItemValueRow[]
   tradeItems: string;    // JSON: ItemValueRow[]
   specialNotes: string | null;
-  createdAt: string;
-  updatedAt: string;
+  updateUser: string;
+  updateTime: string;
 }
 
 export interface MCAPatternInput {

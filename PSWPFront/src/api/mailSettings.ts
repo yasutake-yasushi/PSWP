@@ -12,11 +12,11 @@ export interface MailSetting {
   description: string;
   addresses: string; // JSON: AddressRow[]
   message: string;
-  createdAt: string;
-  updatedAt: string;
+  updateUser: string;
+  updateTime: string;
 }
 
-export type MailSettingInput = Omit<MailSetting, 'id' | 'createdAt' | 'updatedAt'>;
+export type MailSettingInput = Omit<MailSetting, 'id' | 'updateUser' | 'updateTime'>;
 
 export async function getMailSettings(): Promise<MailSetting[]> {
   const res = await fetch(`${BASE_URL}/api/mailsettings`);

@@ -4,11 +4,11 @@ export interface Strategy {
   id: number;
   strategyType: string;
   portId: string;
-  createdAt: string;
-  updatedAt: string;
+  updateUser: string;
+  updateTime: string;
 }
 
-export type StrategyInput = Omit<Strategy, 'id' | 'createdAt' | 'updatedAt'>;
+export type StrategyInput = Omit<Strategy, 'id' | 'updateUser' | 'updateTime'>;
 
 export async function getStrategies(): Promise<Strategy[]> {
   const res = await fetch(`${BASE_URL}/api/strategies`);

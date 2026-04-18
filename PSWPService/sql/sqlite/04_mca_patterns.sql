@@ -3,11 +3,11 @@
 -- ============================================================
 CREATE TABLE IF NOT EXISTS "MCAPatterns" (
     "Id"            INTEGER NOT NULL CONSTRAINT "PK_MCAPatterns" PRIMARY KEY AUTOINCREMENT,
-    "McaPatternId"  TEXT NOT NULL,
-    "McaId"         TEXT NOT NULL,
+    "McaPatternId"  VARCHAR(32) NOT NULL,
+    "McaId"         VARCHAR(32) NOT NULL,
     "ContractItems" TEXT NOT NULL,  -- JSON: {itemName:string, value:string}[]
     "TradeItems"    TEXT NOT NULL,  -- JSON: {itemName:string, value:string}[]
     "SpecialNotes"  TEXT,
-    "CreatedAt"     TEXT NOT NULL,
-    "UpdatedAt"     TEXT NOT NULL
+    "UpdateUser"    VARCHAR(32) NOT NULL,
+    "UpdateTime"    DATETIME    NOT NULL
 );

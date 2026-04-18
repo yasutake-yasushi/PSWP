@@ -5,8 +5,8 @@ export interface MCA {
   agreementDate: string | null;
   executionDate: string | null;
   contractItems: string; // JSON array e.g. '["PaymentTerm","Notional"]'
-  createdAt: string;
-  updatedAt: string;
+  updateUser: string;
+  updateTime: string;
 }
 
 export interface MCAInput {

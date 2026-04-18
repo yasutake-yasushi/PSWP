@@ -30,6 +30,10 @@ const ContractItemPage: React.FC = () => {
     },
     { field: 'defaultValue', headerName: 'Default Value', flex: 1,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'description',  headerName: 'Description',   flex: 2,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'updateUser',   headerName: 'Update User',   width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'updateTime',   headerName: 'Update Time',   width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
+      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
+    },
   ], []);
 
   return (

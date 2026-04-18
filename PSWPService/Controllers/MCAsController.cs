@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSWPService.Data;
+using PSWPService.Helpers;
 using PSWPService.Models;
 
 namespace PSWPService.Controllers;
@@ -30,8 +31,8 @@ public class MCAsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MCA item)
     {
-        item.CreatedAt = DateTime.UtcNow;
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime = DateTime.UtcNow;
         _db.MCAs.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
@@ -49,7 +50,8 @@ public class MCAsController : ControllerBase
         item.AgreementDate = updated.AgreementDate;
         item.ExecutionDate = updated.ExecutionDate;
         item.ContractItems = updated.ContractItems;
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
         return Ok(item);

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PSWPService.Data;
+using PSWPService.Helpers;
 using PSWPService.Models;
 
 namespace PSWPService.Controllers;
@@ -30,8 +31,8 @@ public class StrategiesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Strategy item)
     {
-        item.CreatedAt = DateTime.UtcNow;
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime = DateTime.UtcNow;
         _db.Strategies.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
@@ -46,7 +47,8 @@ public class StrategiesController : ControllerBase
 
         item.StrategyType = updated.StrategyType;
         item.PortId       = updated.PortId;
-        item.UpdatedAt    = DateTime.UtcNow;
+        item.UpdateUser   = AuditHelper.ResolveUpdateUser(User);
+        item.UpdateTime   = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
         return Ok(item);

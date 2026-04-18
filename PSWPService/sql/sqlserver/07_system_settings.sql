@@ -7,7 +7,8 @@ BEGIN
         [Id]             INT            NOT NULL IDENTITY(1,1) CONSTRAINT [PK_SystemSettings] PRIMARY KEY,
         [MipsFilePath]   NVARCHAR(MAX)  NOT NULL,
         [StrikeFilePath] NVARCHAR(MAX)  NOT NULL,
-        [UpdatedAt]      NVARCHAR(MAX)  NOT NULL
+        [UpdateUser]     NVARCHAR(32)   NOT NULL,
+        [UpdateTime]     DATETIME2      NOT NULL
     );
 END
 GO

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PSWPService.Data;
 
@@ -10,9 +11,11 @@ using PSWPService.Data;
 namespace PSWPService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418090832_AddContractItemUpdateUserTime")]
+    partial class AddContractItemUpdateUserTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.6");
@@ -76,7 +79,9 @@ namespace PSWPService.Migrations
 
                     b.Property<string>("Cpty")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<DateOnly?>("ExecutionDate")
@@ -84,15 +89,9 @@ namespace PSWPService.Migrations
 
                     b.Property<string>("McaId")
                         .IsRequired()
-                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UpdateUser")
-                        .IsRequired()
-                        .HasMaxLength(32)
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -110,14 +109,15 @@ namespace PSWPService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("McaId")
                         .IsRequired()
-                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("McaPatternId")
                         .IsRequired()
-                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SpecialNotes")
@@ -127,12 +127,7 @@ namespace PSWPService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UpdateUser")
-                        .IsRequired()
-                        .HasMaxLength(32)
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -148,17 +143,17 @@ namespace PSWPService.Migrations
 
                     b.Property<string>("Addresses")
                         .IsRequired()
-                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EventType")
                         .IsRequired()
-                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
@@ -167,15 +162,9 @@ namespace PSWPService.Migrations
 
                     b.Property<string>("TemplateId")
                         .IsRequired()
-                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UpdateUser")
-                        .IsRequired()
-                        .HasMaxLength(32)
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -189,22 +178,18 @@ namespace PSWPService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PortId")
                         .IsRequired()
-                        .HasMaxLength(8)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StrategyType")
                         .IsRequired()
-                        .HasMaxLength(16)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UpdateUser")
-                        .IsRequired()
-                        .HasMaxLength(32)
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -226,12 +211,7 @@ namespace PSWPService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UpdateUser")
-                        .IsRequired()
-                        .HasMaxLength(32)
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

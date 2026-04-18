@@ -5,13 +5,13 @@ IF OBJECT_ID(N'[dbo].[MCA]', N'U') IS NULL
 BEGIN
     CREATE TABLE [dbo].[MCA] (
         [Id]            INT             NOT NULL IDENTITY(1,1) CONSTRAINT [PK_MCA] PRIMARY KEY,
-        [McaId]         NVARCHAR(MAX)  NOT NULL,
-        [Cpty]          NVARCHAR(MAX)  NOT NULL,
-        [AgreementDate] NVARCHAR(MAX)  NULL,       -- DateOnly (nullable), format: YYYY-MM-DD
-        [ExecutionDate] NVARCHAR(MAX)  NULL,       -- DateOnly (nullable), format: YYYY-MM-DD
+        [McaId]         NVARCHAR(32)   NOT NULL,
+        [Cpty]          NVARCHAR(16)   NOT NULL,
+        [AgreementDate] DATETIME2      NULL,
+        [ExecutionDate] DATETIME2      NULL,
         [ContractItems] NVARCHAR(MAX)  NOT NULL,   -- JSON: string[]  e.g. ["PaymentTerm","Notional"]
-        [CreatedAt]     NVARCHAR(MAX)  NOT NULL,
-        [UpdatedAt]     NVARCHAR(MAX)  NOT NULL
+        [UpdateUser]    NVARCHAR(32)   NOT NULL,
+        [UpdateTime]    DATETIME2      NOT NULL
     );
 END
 GO
