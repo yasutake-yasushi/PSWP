@@ -16,7 +16,6 @@ DB_FILE="${1:-${SCRIPT_DIR}/../pswp.db}"
 echo "Target DB: ${DB_FILE}"
 
 SQL_FILES=(
-    "01_users.sql"
     "02_contract_items.sql"
     "03_mcas.sql"
     "04_mca_patterns.sql"

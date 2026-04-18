@@ -23,7 +23,6 @@ ECHO [OK] Database ready.
 
 REM Apply each DDL file
 FOR %%F IN (
-    01_users.sql
     02_contract_items.sql
     03_mcas.sql
     04_mca_patterns.sql

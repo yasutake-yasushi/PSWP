@@ -21,7 +21,6 @@ if "%~1"=="" (
 echo Target DB: %DB_FILE%
 
 for %%f in (
-    01_users.sql
     02_contract_items.sql
     03_mcas.sql
     04_mca_patterns.sql
