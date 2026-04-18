@@ -3,11 +3,10 @@
   --sidebar-bg: #1a2535;
   --sidebar-text: #c5cdd8;
   --sidebar-active: #4e9af1;
-  --header-height: 0px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
+html, body, #root { height: 100%; }
 body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
 
 .layout {
@@ -15,6 +14,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
   height: 100vh;
 }
 
+/* ========== Sidebar ========== */
 .sidebar {
   width: var(--sidebar-width);
   background: var(--sidebar-bg);
@@ -22,32 +22,88 @@ body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .sidebar-title {
-  padding: 20px 16px;
-  font-size: 1.4rem;
+  padding: 18px 16px;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #fff;
   border-bottom: 1px solid #2e3d50;
   letter-spacing: 2px;
+  flex-shrink: 0;
 }
 
-.nav-item {
+/* ========== Section ========== */
+.nav-section {
+  padding-top: 8px;
+}
+
+.nav-section-label {
+  padding: 6px 14px 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #5a7399;
+  user-select: none;
+}
+
+/* ========== Group (expandable) ========== */
+.nav-group {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
+  gap: 6px;
+  width: 100%;
+  background: none;
+  border: none;
   color: var(--sidebar-text);
-  text-decoration: none;
-  font-size: 0.9rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  text-align: left;
   transition: background 0.15s;
 }
+.nav-group:hover { background: #253447; }
+.nav-group.has-active { color: var(--sidebar-active); }
 
-.nav-item:hover { background: #253447; }
-.nav-item.active { background: #253447; color: var(--sidebar-active); font-weight: 600; }
-.nav-icon { font-size: 1rem; }
+.nav-group.depth-0 { padding: 9px 14px; }
+.nav-group.depth-1 { padding: 7px 14px 7px 28px; }
 
+.nav-caret {
+  font-size: 0.7rem;
+  width: 12px;
+  flex-shrink: 0;
+  color: #5a7399;
+}
+
+/* ========== Leaf (NavLink) ========== */
+.nav-leaf {
+  display: block;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 0.86rem;
+  transition: background 0.15s;
+}
+.nav-leaf:hover { background: #253447; }
+.nav-leaf.active {
+  background: #253447;
+  color: var(--sidebar-active);
+  font-weight: 600;
+  border-left: 3px solid var(--sidebar-active);
+}
+
+.nav-leaf.depth-0 { padding: 9px 14px; }
+.nav-leaf.depth-1 { padding: 8px 14px 8px 30px; }
+.nav-leaf.depth-2 { padding: 7px 14px 7px 46px; }
+
+/* ========== Children ========== */
+.nav-children {
+  border-left: 1px solid #2e3d50;
+  margin-left: 20px;
+}
+
+/* ========== Main content ========== */
 .content {
   flex: 1;
   overflow: auto;
