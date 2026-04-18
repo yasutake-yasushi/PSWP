@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace PSWPService.Models;
 
-public class McaPattern
+[Table("McaPatterns")]
+public class MCAPattern
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string McaPatternId { get; set; } = string.Empty;

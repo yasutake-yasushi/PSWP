@@ -1,5 +1,5 @@
 -- ============================================================
--- Table: McaPatterns
+-- Table: McaPatterns  (entity: MCAPattern)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS "McaPatterns" (
     "Id"            TEXT NOT NULL CONSTRAINT "PK_McaPatterns" PRIMARY KEY,

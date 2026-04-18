@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace PSWPService.Models;
 
-public class Mca
+[Table("Mcas")]
+public class MCA
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string McaId { get; set; } = string.Empty;

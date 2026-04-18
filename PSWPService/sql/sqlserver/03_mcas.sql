@@ -1,5 +1,5 @@
 -- ============================================================
--- Table: Mcas  [SQL Server]
+-- Table: Mcas  (entity: MCA)  [SQL Server]
 -- ============================================================
 IF OBJECT_ID(N'[dbo].[Mcas]', N'U') IS NULL
 BEGIN

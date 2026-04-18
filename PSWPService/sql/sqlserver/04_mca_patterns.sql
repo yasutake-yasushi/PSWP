@@ -1,5 +1,5 @@
 -- ============================================================
--- Table: McaPatterns  [SQL Server]
+-- Table: McaPatterns  (entity: MCAPattern)  [SQL Server]
 -- ============================================================
 IF OBJECT_ID(N'[dbo].[McaPatterns]', N'U') IS NULL
 BEGIN

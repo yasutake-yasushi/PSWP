@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { McaPattern, McaPatternInput, ItemValueRow } from '../api/mcaPatterns';
-import { Mca } from '../api/mcas';
+import { MCAPattern, MCAPatternInput, ItemValueRow } from '../api/mcaPatterns';
+import { MCA } from '../api/mcas';
 import { ContractItem } from '../api/contractItems';
 import './ContractItemModal.css';
 import './McaPatternModal.css';
@@ -46,11 +46,11 @@ const ValueCell: React.FC<ValueCellProps> = ({ row, idx, master, readonly, onUpd
 
 interface Props {
   mode: ModalMode;
-  item?: McaPattern;
-  mcas: Mca[];
+  item?: MCAPattern;
+  mcas: MCA[];
   contractItemMaster: ContractItem[];  // master list with category info
   onClose: () => void;
-  onSave: (input: McaPatternInput) => Promise<void>;
+  onSave: (input: MCAPatternInput) => Promise<void>;
 }
 
 type TabKey = 'contract' | 'trade' | 'special';
@@ -62,7 +62,7 @@ const parseRows = (json: string): ItemValueRow[] => {
   try { return JSON.parse(json); } catch { return []; }
 };
 
-const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster, onClose, onSave }) => {
+const MCAPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster, onClose, onSave }) => {
   const [patternId, setPatternId] = useState('');
   const [mcaId, setMcaId] = useState('');
   const [contractRows, setContractRows] = useState<ItemValueRow[]>([]);
@@ -301,4 +301,4 @@ const delRowBtn: React.CSSProperties = {
   border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: '0.78rem',
 };
 
-export default McaPatternModal;
+export default MCAPatternModal;

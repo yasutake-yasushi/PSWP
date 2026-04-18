@@ -1,4 +1,4 @@
-export interface Mca {
+export interface MCA {
   id: string;
   mcaId: string;
   cpty: string;
@@ -9,7 +9,7 @@ export interface Mca {
   updatedAt: string;
 }
 
-export interface McaInput {
+export interface MCAInput {
   mcaId: string;
   cpty: string;
   agreementDate: string | null;
@@ -19,19 +19,19 @@ export interface McaInput {
 
 const BASE_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:5232';
 
-export const getMcas = async (): Promise<Mca[]> => {
+export const getMCAs = async (): Promise<MCA[]> => {
   const res = await fetch(`${BASE_URL}/api/mcas`);
   if (!res.ok) throw new Error(`GET /api/mcas failed: ${res.status}`);
   return res.json();
 };
 
-export const getMca = async (id: string): Promise<Mca> => {
+export const getMCA = async (id: string): Promise<MCA> => {
   const res = await fetch(`${BASE_URL}/api/mcas/${id}`);
   if (!res.ok) throw new Error(`GET /api/mcas/${id} failed: ${res.status}`);
   return res.json();
 };
 
-export const createMca = async (input: McaInput): Promise<Mca> => {
+export const createMCA = async (input: MCAInput): Promise<MCA> => {
   const res = await fetch(`${BASE_URL}/api/mcas`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -41,7 +41,7 @@ export const createMca = async (input: McaInput): Promise<Mca> => {
   return res.json();
 };
 
-export const updateMca = async (id: string, input: McaInput): Promise<Mca> => {
+export const updateMCA = async (id: string, input: MCAInput): Promise<MCA> => {
   const res = await fetch(`${BASE_URL}/api/mcas/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -51,7 +51,7 @@ export const updateMca = async (id: string, input: McaInput): Promise<Mca> => {
   return res.json();
 };
 
-export const deleteMca = async (id: string): Promise<void> => {
+export const deleteMCA = async (id: string): Promise<void> => {
   const res = await fetch(`${BASE_URL}/api/mcas/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error(`DELETE /api/mcas/${id} failed: ${res.status}`);
 };

@@ -1,28 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ColDef } from 'ag-grid-community';
 import {
-  McaPattern,
-  McaPatternInput,
-  getMcaPatterns,
-  createMcaPattern,
-  updateMcaPattern,
-  deleteMcaPattern,
+  MCAPattern,
+  MCAPatternInput,
+  getMCAPatterns,
+  createMCAPattern,
+  updateMCAPattern,
+  deleteMCAPattern,
 } from '../api/mcaPatterns';
-import { getMcas, Mca } from '../api/mcas';
+import { getMCAs, MCA } from '../api/mcas';
 import { getContractItems, ContractItem } from '../api/contractItems';
 import CrudGridPage from '../components/CrudGridPage';
-import McaPatternModal from '../components/McaPatternModal';
+import MCAPatternModal from '../components/MCAPatternModal';
 
-const McaPatternPage: React.FC = () => {
-  const [mcaList, setMcaList] = useState<Mca[]>([]);
+const MCAPatternPage: React.FC = () => {
+  const [mcaList, setMcaList] = useState<MCA[]>([]);
   const [contractItemList, setContractItemList] = useState<ContractItem[]>([]);
 
   useEffect(() => {
-    getMcas().then(list => setMcaList(list)).catch(() => {});
+    getMCAs().then(list => setMcaList(list)).catch(() => {});
     getContractItems().then(list => setContractItemList(list)).catch(() => {});
   }, []);
 
-  const columnDefs = useMemo<ColDef<McaPattern>[]>(() => [
+  const columnDefs = useMemo<ColDef<MCAPattern>[]>(() => [
     {
       field: 'id',
       headerName: 'UUID',
@@ -38,16 +38,16 @@ const McaPatternPage: React.FC = () => {
   ], []);
 
   return (
-    <CrudGridPage<McaPattern, McaPatternInput>
+    <CrudGridPage<MCAPattern, MCAPatternInput>
       title="MCA Pattern"
       columnDefs={columnDefs}
-      fetchAll={getMcaPatterns}
-      onCreate={createMcaPattern}
-      onUpdate={(id, input) => updateMcaPattern(id, input)}
-      onDelete={deleteMcaPattern}
+      fetchAll={getMCAPatterns}
+      onCreate={createMCAPattern}
+      onUpdate={(id, input) => updateMCAPattern(id, input)}
+      onDelete={deleteMCAPattern}
       getDeleteMessage={item => `Are you sure you want to delete Pattern "${item.mcaPatternId}"?\nThis action cannot be undone.`}
       renderModal={({ mode, item, onClose, onSave }) => (
-        <McaPatternModal
+        <MCAPatternModal
           mode={mode}
           item={item}
           mcas={mcaList}
@@ -60,4 +60,4 @@ const McaPatternPage: React.FC = () => {
   );
 };
 
-export default McaPatternPage;
+export default MCAPatternPage;

@@ -7,42 +7,42 @@ namespace PSWPService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class McasController : ControllerBase
+public class MCAsController : ControllerBase
 {
     private readonly AppDbContext _db;
 
-    public McasController(AppDbContext db) => _db = db;
+    public MCAsController(AppDbContext db) => _db = db;
 
     // GET api/mcas
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _db.Mcas.OrderBy(m => m.McaId).ToListAsync());
+        => Ok(await _db.MCAs.OrderBy(m => m.McaId).ToListAsync());
 
     // GET api/mcas/{id}
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var item = await _db.Mcas.FindAsync(id);
+        var item = await _db.MCAs.FindAsync(id);
         return item is null ? NotFound() : Ok(item);
     }
 
     // POST api/mcas
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Mca item)
+    public async Task<IActionResult> Create([FromBody] MCA item)
     {
         item.Id = Guid.NewGuid();
         item.CreatedAt = DateTime.UtcNow;
         item.UpdatedAt = DateTime.UtcNow;
-        _db.Mcas.Add(item);
+        _db.MCAs.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
     }
 
     // PUT api/mcas/{id}
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] Mca updated)
+    public async Task<IActionResult> Update(Guid id, [FromBody] MCA updated)
     {
-        var item = await _db.Mcas.FindAsync(id);
+        var item = await _db.MCAs.FindAsync(id);
         if (item is null) return NotFound();
 
         item.McaId = updated.McaId;
@@ -60,9 +60,9 @@ public class McasController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var item = await _db.Mcas.FindAsync(id);
+        var item = await _db.MCAs.FindAsync(id);
         if (item is null) return NotFound();
-        _db.Mcas.Remove(item);
+        _db.MCAs.Remove(item);
         await _db.SaveChangesAsync();
         return NoContent();
     }

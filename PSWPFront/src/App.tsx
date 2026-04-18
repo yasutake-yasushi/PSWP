@@ -5,8 +5,8 @@ import { AllEnterpriseModule } from 'ag-grid-enterprise';
 import Layout from './components/Layout';
 import DashboardPage from './pages/DashboardPage';
 import ContractItemPage from './pages/ContractItemPage';
-import McaPage from './pages/McaPage';
-import McaPatternPage from './pages/McaPatternPage';
+import MCAPage from './pages/MCAPage';
+import MCAPatternPage from './pages/MCAPatternPage';
 import MailSettingPage from './pages/MailSettingPage';
 import StrategyPage from './pages/StrategyPage';
 import SystemSettingPage from './pages/SystemSettingPage';
@@ -26,10 +26,10 @@ const App: React.FC = () => (
 
         {/* Master > Definition */}
         <Route path="master/definition/contract-item" element={<ContractItemPage />} />
-        <Route path="master/definition/mca"           element={<McaPage />} />
+        <Route path="master/definition/mca"           element={<MCAPage />} />
 
         {/* Master */}
-        <Route path="master/mca-pattern"  element={<McaPatternPage />} />
+        <Route path="master/mca-pattern"  element={<MCAPatternPage />} />
         <Route path="master/mail-setting" element={<MailSettingPage />} />
         <Route path="master/strategy"     element={<StrategyPage />} />
 

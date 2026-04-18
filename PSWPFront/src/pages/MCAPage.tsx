@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react';
 import { ColDef } from 'ag-grid-community';
 import {
-  Mca,
-  McaInput,
-  getMcas,
-  createMca,
-  updateMca,
-  deleteMca,
+  MCA,
+  MCAInput,
+  getMCAs,
+  createMCA,
+  updateMCA,
+  deleteMCA,
 } from '../api/mcas';
 import CrudGridPage from '../components/CrudGridPage';
-import McaModal from '../components/McaModal';
+import MCAModal from '../components/MCAModal';
 
-const McaPage: React.FC = () => {
-  const columnDefs = useMemo<ColDef<Mca>[]>(() => [
+const MCAPage: React.FC = () => {
+  const columnDefs = useMemo<ColDef<MCA>[]>(() => [
     {
       field: 'id',
       headerName: 'UUID',
@@ -41,19 +41,19 @@ const McaPage: React.FC = () => {
   ], []);
 
   return (
-    <CrudGridPage<Mca, McaInput>
+    <CrudGridPage<MCA, MCAInput>
       title="MCA"
       columnDefs={columnDefs}
-      fetchAll={getMcas}
-      onCreate={createMca}
-      onUpdate={(id, input) => updateMca(id, input)}
-      onDelete={deleteMca}
+      fetchAll={getMCAs}
+      onCreate={createMCA}
+      onUpdate={(id, input) => updateMCA(id, input)}
+      onDelete={deleteMCA}
       getDeleteMessage={item => `Are you sure you want to delete MCA "${item.mcaId}"?\nThis action cannot be undone.`}
       renderModal={({ mode, item, onClose, onSave }) => (
-        <McaModal mode={mode} item={item} onClose={onClose} onSave={onSave} />
+        <MCAModal mode={mode} item={item} onClose={onClose} onSave={onSave} />
       )}
     />
   );
 };
 
-export default McaPage;
+export default MCAPage;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Mca, McaInput } from '../api/mcas';
+import { MCA, MCAInput } from '../api/mcas';
 import ContractItemSelector from './ContractItemSelector';
 import './ContractItemModal.css'; // reuse same CSS
 
@@ -7,12 +7,12 @@ export type ModalMode = 'add' | 'view' | 'edit';
 
 interface Props {
   mode: ModalMode;
-  item?: Mca;
+  item?: MCA;
   onClose: () => void;
-  onSave: (input: McaInput) => Promise<void>;
+  onSave: (input: MCAInput) => Promise<void>;
 }
 
-const EMPTY: McaInput = {
+const EMPTY: MCAInput = {
   mcaId: '',
   cpty: '',
   agreementDate: null,
@@ -24,8 +24,8 @@ const ALNUM_RE = /^[A-Za-z0-9]*$/;
 
 const TITLE: Record<ModalMode, string> = { add: 'Add', view: 'View', edit: 'Edit' };
 
-const McaModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
-  const [form, setForm] = useState<McaInput>(EMPTY);
+const MCAModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
+  const [form, setForm] = useState<MCAInput>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSelector, setShowSelector] = useState(false);
@@ -45,7 +45,7 @@ const McaModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
     }
   }, [item]);
 
-  const handleChange = (field: keyof McaInput, value: string | null) => {
+  const handleChange = (field: keyof MCAInput, value: string | null) => {
     if ((field === 'mcaId' || field === 'cpty') && typeof value === 'string') {
       if (!ALNUM_RE.test(value)) return;
     }
@@ -192,4 +192,4 @@ const editBtn: React.CSSProperties = {
   border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: '0.83rem', fontWeight: 600,
 };
 
-export default McaModal;
+export default MCAModal;

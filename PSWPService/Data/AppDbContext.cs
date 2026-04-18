@@ -9,8 +9,8 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<ContractItem> ContractItems => Set<ContractItem>();
-    public DbSet<Mca> Mcas => Set<Mca>();
-    public DbSet<McaPattern> McaPatterns => Set<McaPattern>();
+    public DbSet<MCA> MCAs => Set<MCA>();
+    public DbSet<MCAPattern> MCAPatterns => Set<MCAPattern>();
     public DbSet<MailSetting> MailSettings => Set<MailSetting>();
     public DbSet<Strategy> Strategies => Set<Strategy>();
     public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
