@@ -56,7 +56,6 @@ interface Props {
 type TabKey = 'contract' | 'trade' | 'special';
 
 const ALNUM_RE = /^[A-Za-z0-9]*$/;
-const ALNUM_MULTI_RE = /^[A-Za-z0-9\n ]*$/;
 const TITLE: Record<ModalMode, string> = { add: 'Add', view: 'View', edit: 'Edit' };
 
 const parseRows = (json: string): ItemValueRow[] => {
@@ -268,8 +267,8 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
                 value={specialNotes}
                 readOnly={readonly}
                 rows={8}
-                placeholder="Alphanumeric and spaces only"
-                onChange={e => { if (ALNUM_MULTI_RE.test(e.target.value)) setSpecialNotes(e.target.value); }}
+                placeholder="Free text"
+                onChange={e => setSpecialNotes(e.target.value)}
               />
             )}
           </div>
