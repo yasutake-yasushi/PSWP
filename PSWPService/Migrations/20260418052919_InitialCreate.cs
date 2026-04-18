@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace backend.Migrations
+namespace PSWPService.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

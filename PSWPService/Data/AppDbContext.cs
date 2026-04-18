@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using backend.Models;
+using PSWPService.Models;
 
-namespace backend.Data;
+namespace PSWPService.Data;
 
 public class AppDbContext : DbContext
 {

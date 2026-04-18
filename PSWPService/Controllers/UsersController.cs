@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using backend.Data;
-using backend.Models;
+using PSWPService.Data;
+using PSWPService.Models;
 
-namespace backend.Controllers;
+namespace PSWPService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

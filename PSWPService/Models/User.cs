@@ -1,4 +1,4 @@
-namespace backend.Models;
+namespace PSWPService.Models;
 
 public class User
 {
