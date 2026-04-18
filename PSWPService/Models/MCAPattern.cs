@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PSWPService.Models;
 
-[Table("McaPatterns")]
+[Table("MCAPatterns")]
 public class MCAPattern
 {
     public Guid Id { get; set; } = Guid.NewGuid();

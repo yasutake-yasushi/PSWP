@@ -1,8 +1,8 @@
 -- ============================================================
--- Table: McaPatterns  (entity: MCAPattern)
+-- Table: MCAPatterns  (entity: MCAPattern)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS "McaPatterns" (
-    "Id"            TEXT NOT NULL CONSTRAINT "PK_McaPatterns" PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS "MCAPatterns" (
+    "Id"            TEXT NOT NULL CONSTRAINT "PK_MCAPatterns" PRIMARY KEY,
     "McaPatternId"  TEXT NOT NULL,
     "McaId"         TEXT NOT NULL,
     "ContractItems" TEXT NOT NULL,  -- JSON: {itemName:string, value:string}[]

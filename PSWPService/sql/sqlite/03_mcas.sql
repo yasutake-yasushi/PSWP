@@ -1,8 +1,8 @@
 -- ============================================================
--- Table: Mcas  (entity: MCA)
+-- Table: MCAs  (entity: MCA)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS "Mcas" (
-    "Id"            TEXT NOT NULL CONSTRAINT "PK_Mcas" PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS "MCAs" (
+    "Id"            TEXT NOT NULL CONSTRAINT "PK_MCAs" PRIMARY KEY,
     "McaId"         TEXT NOT NULL,
     "Cpty"          TEXT NOT NULL,
     "AgreementDate" TEXT,           -- DateOnly (nullable), format: YYYY-MM-DD
