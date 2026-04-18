@@ -1,10 +1,10 @@
 -- ============================================================
--- Table: MCAs  (entity: MCA)  [SQL Server]
+-- Table: MCA  (entity: MCA)  [SQL Server]
 -- ============================================================
-IF OBJECT_ID(N'[dbo].[MCAs]', N'U') IS NULL
+IF OBJECT_ID(N'[dbo].[MCA]', N'U') IS NULL
 BEGIN
-    CREATE TABLE [dbo].[MCAs] (
-        [Id]            NVARCHAR(MAX)  NOT NULL CONSTRAINT [PK_MCAs] PRIMARY KEY,
+    CREATE TABLE [dbo].[MCA] (
+        [Id]            NVARCHAR(MAX)  NOT NULL CONSTRAINT [PK_MCA] PRIMARY KEY,
         [McaId]         NVARCHAR(MAX)  NOT NULL,
         [Cpty]          NVARCHAR(MAX)  NOT NULL,
         [AgreementDate] NVARCHAR(MAX)  NULL,       -- DateOnly (nullable), format: YYYY-MM-DD
