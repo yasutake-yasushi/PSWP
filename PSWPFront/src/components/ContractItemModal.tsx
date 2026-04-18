@@ -14,13 +14,19 @@ interface Props {
 const EMPTY: ContractItemInput = {
   category: '',
   itemName: '',
-  dataType: 'string',
+  dataType: 'String',
   values: '',
   defaultValue: '',
   description: '',
 };
 
-const DATA_TYPES = ['string', 'number', 'boolean', 'date', 'datetime', 'list'];
+const CATEGORIES = ['Contract', 'Trade', 'CFRoll', 'Equity', 'Interest'];
+const DATA_TYPES = ['String', 'Date', 'Int', 'Number', 'Bool', 'Enum'];
+
+// 英数字のみ許可
+const ALNUM_RE = /^[A-Za-z0-9]*$/;
+// 英数字・カンマ・改行のみ許可（Values用）
+const ALNUM_MULTI_RE = /^[A-Za-z0-9\n,]*$/;
 
 const TITLE: Record<ModalMode, string> = {
   add: '行追加',
@@ -50,6 +56,13 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
   }, [item]);
 
   const handleChange = (field: keyof ContractItemInput, value: string) => {
+    // 英数字のみ許可するフィールドのバリデーション
+    if (field === 'itemName' || field === 'defaultValue') {
+      if (!ALNUM_RE.test(value)) return;
+    }
+    if (field === 'values') {
+      if (!ALNUM_MULTI_RE.test(value)) return;
+    }
     setForm(f => ({ ...f, [field]: value }));
   };
 
@@ -83,12 +96,14 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
 
         <form onSubmit={handleSubmit} className="modal-body">
           <Field label="Category" required>
-            <input
+            <select
               value={form.category}
               onChange={e => handleChange('category', e.target.value)}
-              readOnly={readonly}
-              placeholder="例) General"
-            />
+              disabled={readonly}
+            >
+              <option value="">-- 選択してください --</option>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
           </Field>
 
           <Field label="Item Name" required>
@@ -96,7 +111,7 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
               value={form.itemName}
               onChange={e => handleChange('itemName', e.target.value)}
               readOnly={readonly}
-              placeholder="例) PaymentTerm"
+              placeholder="英数字のみ (例: PaymentTerm)"
             />
           </Field>
 
@@ -111,11 +126,12 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
           </Field>
 
           <Field label="Values">
-            <input
+            <textarea
               value={form.values ?? ''}
               onChange={e => handleChange('values', e.target.value)}
               readOnly={readonly}
-              placeholder="例) Net30,Net60,Net90"
+              rows={3}
+              placeholder="英数字のみ (複数行入力可)"
             />
           </Field>
 
@@ -124,7 +140,7 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
               value={form.defaultValue ?? ''}
               onChange={e => handleChange('defaultValue', e.target.value)}
               readOnly={readonly}
-              placeholder="例) Net30"
+              placeholder="英数字のみ (例: Net30)"
             />
           </Field>
 
@@ -142,11 +158,11 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
 
           <div className="modal-footer">
             <button type="button" className="btn-secondary" onClick={onClose}>
-              {readonly ? '閉じる' : 'キャンセル'}
+              {readonly ? '閉じる' : 'Cancel'}
             </button>
             {!readonly && (
               <button type="submit" className="btn-primary" disabled={saving}>
-                {saving ? '保存中...' : '保存'}
+                {saving ? '保存中...' : 'OK'}
               </button>
             )}
           </div>

@@ -39,7 +39,17 @@ const ContractItemPage: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   // ---- アクションボタン セルレンダラー ----
+  // ピン留め下部行のとき → 「＋ 行追加」ボタン、通常行のとき → 参照/更新/削除
   const ActionCellRenderer = useCallback((params: ICellRendererParams<ContractItem>) => {
+    if (params.node.rowPinned === 'bottom') {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <button style={addRowBtn} onClick={() => setModal({ open: true, mode: 'add' })}>
+            ＋ 行追加
+          </button>
+        </div>
+      );
+    }
     const item = params.data!;
     return (
       <div style={{ display: 'flex', gap: 4, alignItems: 'center', height: '100%' }}>
@@ -124,7 +134,6 @@ const ContractItemPage: React.FC = () => {
       {/* ヘッダー */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <h2 style={{ flex: 1, fontSize: '1.1rem' }}>Contract Item</h2>
-        <button style={toolbarBtn('#27ae60')} onClick={() => setModal({ open: true, mode: 'add' })}>+ 行追加</button>
         <button style={toolbarBtn('#4e9af1')} onClick={loadData}>更新</button>
       </div>
 
@@ -147,6 +156,11 @@ const ContractItemPage: React.FC = () => {
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
           onGridReady={onGridReady}
+          pinnedBottomRowData={[{}] as any}
+          getRowStyle={params => params.node.rowPinned === 'bottom'
+            ? { background: '#f0f7ff', fontWeight: 500 }
+            : undefined
+          }
           pagination
           paginationPageSize={25}
           paginationPageSizeSelector={[10, 25, 50, 100]}
@@ -184,6 +198,12 @@ const toolbarBtn = (bg: string): React.CSSProperties => ({
   padding: '6px 14px', background: bg, color: '#fff',
   border: 'none', borderRadius: 4, cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem',
 });
+
+const addRowBtn: React.CSSProperties = {
+  padding: '3px 14px', background: '#27ae60', color: '#fff',
+  border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700,
+  letterSpacing: '0.3px',
+};
 
 const actionBtn = (bg: string): React.CSSProperties => ({
   padding: '2px 8px', background: bg, color: '#fff',
