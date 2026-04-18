@@ -69,7 +69,6 @@ const ContractItemPage: React.FC = () => {
     {
       headerName: '操作',
       width: 180,
-      pinned: 'right',
       sortable: false,
       filter: false,
       cellRenderer: ActionCellRenderer,
@@ -79,7 +78,6 @@ const ContractItemPage: React.FC = () => {
 
   const defaultColDef = useMemo<ColDef>(() => ({
     resizable: true,
-    floatingFilter: true,
   }), []);
 
   const loadData = useCallback(async () => {
