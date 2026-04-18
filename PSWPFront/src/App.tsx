@@ -8,6 +8,7 @@ import ContractItemPage from './pages/ContractItemPage';
 import McaPage from './pages/McaPage';
 import McaPatternPage from './pages/McaPatternPage';
 import MailSettingPage from './pages/MailSettingPage';
+import StrategyPage from './pages/StrategyPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 // AG Grid Enterprise モジュール登録
@@ -29,7 +30,7 @@ const App: React.FC = () => (
         {/* Master */}
         <Route path="master/mca-pattern"  element={<McaPatternPage />} />
         <Route path="master/mail-setting" element={<MailSettingPage />} />
-        <Route path="master/strategy"     element={<PlaceholderPage title="Strategy" />} />
+        <Route path="master/strategy"     element={<StrategyPage />} />
 
         {/* System */}
         <Route path="system/setting" element={<PlaceholderPage title="System Setting" />} />
