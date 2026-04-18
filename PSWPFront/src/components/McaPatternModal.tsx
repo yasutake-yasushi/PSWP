@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { McaPattern, McaPatternInput, ItemValueRow } from '../api/mcaPatterns';
+import { Mca } from '../api/mcas';
 import './ContractItemModal.css';
 import './McaPatternModal.css';
 
@@ -8,7 +9,7 @@ export type ModalMode = 'add' | 'view' | 'edit';
 interface Props {
   mode: ModalMode;
   item?: McaPattern;
-  mcaIds: string[];           // all registered MCA IDs for the dropdown
+  mcas: Mca[];              // full MCA list
   onClose: () => void;
   onSave: (input: McaPatternInput) => Promise<void>;
 }
@@ -23,7 +24,7 @@ const parseRows = (json: string): ItemValueRow[] => {
   try { return JSON.parse(json); } catch { return []; }
 };
 
-const McaPatternModal: React.FC<Props> = ({ mode, item, mcaIds, onClose, onSave }) => {
+const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, onClose, onSave }) => {
   const [patternId, setPatternId] = useState('');
   const [mcaId, setMcaId] = useState('');
   const [contractRows, setContractRows] = useState<ItemValueRow[]>([]);
@@ -51,6 +52,22 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcaIds, onClose, onSave 
     setActiveTab('contract');
     setError(null);
   }, [item]);
+
+  // MCA ID selection handler: populate Contract rows from the selected MCA's contract items
+  const handleMcaIdChange = (selectedMcaId: string) => {
+    setMcaId(selectedMcaId);
+    if (!selectedMcaId) return;
+    const found = mcas.find(m => m.mcaId === selectedMcaId);
+    if (!found) return;
+    try {
+      const names: string[] = JSON.parse(found.contractItems);
+      // Merge: keep existing values for matching itemNames, add new rows for new items
+      setContractRows(prev => {
+        const valueMap = Object.fromEntries(prev.map(r => [r.itemName, r.value]));
+        return names.map(n => ({ itemName: n, value: valueMap[n] ?? '' }));
+      });
+    } catch { /* ignore */ }
+  };
 
   // ---- row helpers ----
   const addRow = (setter: React.Dispatch<React.SetStateAction<ItemValueRow[]>>) =>
@@ -166,10 +183,10 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcaIds, onClose, onSave 
             <select
               value={mcaId}
               disabled={readonly}
-              onChange={e => setMcaId(e.target.value)}
+              onChange={e => handleMcaIdChange(e.target.value)}
             >
               <option value="">-- Select --</option>
-              {mcaIds.map(id => <option key={id} value={id}>{id}</option>)}
+              {mcas.map(m => <option key={m.id} value={m.mcaId}>{m.mcaId}</option>)}
             </select>
           </div>
 
