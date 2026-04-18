@@ -22,6 +22,7 @@ export interface MCAPatternInput {
   specialNotes: string | null;
 }
 
+
 const BASE_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:5232';
 
 export const getMCAPatterns = async (): Promise<MCAPattern[]> => {
