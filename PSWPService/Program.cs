@@ -21,13 +21,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// マイグレーション自動適用
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

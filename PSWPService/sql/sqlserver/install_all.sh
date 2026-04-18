@@ -28,7 +28,6 @@ FILES=(
     05_mail_settings.sql
     06_strategies.sql
     07_system_settings.sql
-    08_ef_migrations_history.sql
 )
 
 for f in "${FILES[@]}"; do

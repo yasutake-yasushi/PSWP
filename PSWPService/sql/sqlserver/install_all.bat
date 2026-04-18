@@ -29,7 +29,6 @@ FOR %%F IN (
     05_mail_settings.sql
     06_strategies.sql
     07_system_settings.sql
-    08_ef_migrations_history.sql
 ) DO (
     ECHO Applying %%F ...
     sqlcmd -S %SERVER% -d %DATABASE% -i "%%F"

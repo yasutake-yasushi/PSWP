@@ -27,7 +27,6 @@ for %%f in (
     05_mail_settings.sql
     06_strategies.sql
     07_system_settings.sql
-    08_ef_migrations_history.sql
 ) do (
     echo   Applying %%f...
     sqlite3 "%DB_FILE%" < "%SCRIPT_DIR%%%f"
