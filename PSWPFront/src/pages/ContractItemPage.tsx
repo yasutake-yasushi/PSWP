@@ -25,7 +25,9 @@ const ContractItemPage: React.FC = () => {
     { field: 'category',     headerName: 'Category',      flex: 1,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'itemName',     headerName: 'Item Name',     flex: 1.5,  sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'dataType',     headerName: 'Data Type',     width: 120, sortable: true, filter: 'agSetColumnFilter',  resizable: true },
-    { field: 'values',       headerName: 'Values',        flex: 1.5,  sortable: true, filter: 'agTextColumnFilter', resizable: true },
+    { field: 'values', headerName: 'Values', flex: 1.5, sortable: true, filter: 'agTextColumnFilter', resizable: true,
+      valueFormatter: ({ value }) => value ? (value as string).split('\n').map((v: string) => v.trim()).filter(Boolean).join(' / ') : '',
+    },
     { field: 'defaultValue', headerName: 'Default Value', flex: 1,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'description',  headerName: 'Description',   flex: 2,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
   ], []);
