@@ -7,6 +7,43 @@ import './McaPatternModal.css';
 
 export type ModalMode = 'add' | 'view' | 'edit';
 
+// ---- Standalone ValueCell to avoid remount on every keystroke ----
+interface ValueCellProps {
+  row: ItemValueRow;
+  idx: number;
+  master?: ContractItem;
+  readonly: boolean;
+  onUpdate: (idx: number, val: string) => void;
+}
+const ValueCell: React.FC<ValueCellProps> = ({ row, idx, master, readonly, onUpdate }) => {
+  const isSelectType = master && (master.dataType === 'Bool' || master.dataType === 'Enum');
+  const options = isSelectType
+    ? (master!.values ?? '').split('\n').map(v => v.trim()).filter(v => v.length > 0)
+    : [];
+
+  if (isSelectType) {
+    return (
+      <select
+        className="iv-input"
+        value={row.value}
+        disabled={readonly}
+        onChange={e => onUpdate(idx, e.target.value)}
+      >
+        <option value="">-- Select --</option>
+        {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+      </select>
+    );
+  }
+  return (
+    <input
+      className="iv-input"
+      value={row.value}
+      readOnly={readonly}
+      onChange={e => onUpdate(idx, e.target.value)}
+    />
+  );
+};
+
 interface Props {
   mode: ModalMode;
   item?: McaPattern;
@@ -123,42 +160,6 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
     contractItemMaster.map(ci => [ci.itemName, ci])
   );
 
-  const ValueCell = ({
-    row, setter, idx,
-  }: {
-    row: ItemValueRow;
-    setter: React.Dispatch<React.SetStateAction<ItemValueRow[]>>;
-    idx: number;
-  }) => {
-    const master = masterByName[row.itemName];
-    const isSelectType = master && (master.dataType === 'Bool' || master.dataType === 'Enum');
-    const options = isSelectType
-      ? (master.values ?? '').split('\n').map(v => v.trim()).filter(v => v.length > 0)
-      : [];
-
-    if (isSelectType) {
-      return (
-        <select
-          className="iv-input"
-          value={row.value}
-          disabled={readonly}
-          onChange={e => updateRow(setter, idx, 'value', e.target.value)}
-        >
-          <option value="">-- Select --</option>
-          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-      );
-    }
-    return (
-      <input
-        className="iv-input"
-        value={row.value}
-        readOnly={readonly}
-        onChange={e => updateRow(setter, idx, 'value', e.target.value)}
-      />
-    );
-  };
-
   const ItemValueGrid = (
     rows: ItemValueRow[],
     setter: React.Dispatch<React.SetStateAction<ItemValueRow[]>>,
@@ -184,7 +185,13 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
                 />
               </td>
               <td>
-                <ValueCell row={row} setter={setter} idx={i} />
+                <ValueCell
+                  row={row}
+                  idx={i}
+                  master={masterByName[row.itemName]}
+                  readonly={readonly}
+                  onUpdate={(idx, val) => updateRow(setter, idx, 'value', val)}
+                />
               </td>
               {!readonly && (
                 <td>
