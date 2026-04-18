@@ -118,6 +118,47 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
   };
 
   // ---- Item/Value grid for Contract and Trade tabs ----
+  // Build a quick lookup: itemName -> ContractItem master record
+  const masterByName = Object.fromEntries(
+    contractItemMaster.map(ci => [ci.itemName, ci])
+  );
+
+  const ValueCell = ({
+    row, setter, idx,
+  }: {
+    row: ItemValueRow;
+    setter: React.Dispatch<React.SetStateAction<ItemValueRow[]>>;
+    idx: number;
+  }) => {
+    const master = masterByName[row.itemName];
+    const isSelectType = master && (master.dataType === 'Bool' || master.dataType === 'Enum');
+    const options = isSelectType
+      ? (master.values ?? '').split('\n').map(v => v.trim()).filter(v => v.length > 0)
+      : [];
+
+    if (isSelectType) {
+      return (
+        <select
+          className="iv-input"
+          value={row.value}
+          disabled={readonly}
+          onChange={e => updateRow(setter, idx, 'value', e.target.value)}
+        >
+          <option value="">-- Select --</option>
+          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      );
+    }
+    return (
+      <input
+        className="iv-input"
+        value={row.value}
+        readOnly={readonly}
+        onChange={e => updateRow(setter, idx, 'value', e.target.value)}
+      />
+    );
+  };
+
   const ItemValueGrid = (
     rows: ItemValueRow[],
     setter: React.Dispatch<React.SetStateAction<ItemValueRow[]>>,
@@ -143,12 +184,7 @@ const McaPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
                 />
               </td>
               <td>
-                <input
-                  className="iv-input"
-                  value={row.value}
-                  readOnly={readonly}
-                  onChange={e => updateRow(setter, i, 'value', e.target.value)}
-                />
+                <ValueCell row={row} setter={setter} idx={i} />
               </td>
               {!readonly && (
                 <td>
