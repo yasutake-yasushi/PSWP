@@ -83,7 +83,7 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
   };
 
   return (
-    <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className="modal-overlay">
       <div className="modal-box">
         <div className="modal-header">
           <span>Contract Item — {TITLE[mode]}</span>

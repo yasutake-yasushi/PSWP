@@ -1,0 +1,16 @@
+namespace PSWPService.Models;
+
+public class Mca
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string McaId { get; set; } = string.Empty;
+    public string Cpty { get; set; } = string.Empty;
+    public DateOnly? AgreementDate { get; set; }
+    public DateOnly? ExecutionDate { get; set; }
+
+    /// <summary>JSON 配列文字列で Contract Item の ItemName を保持 e.g. ["PaymentTerm","Notional"]</summary>
+    public string ContractItems { get; set; } = "[]";
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+}

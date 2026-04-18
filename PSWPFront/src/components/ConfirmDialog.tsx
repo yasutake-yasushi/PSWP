@@ -10,7 +10,7 @@ interface Props {
 }
 
 const ConfirmDialog: React.FC<Props> = ({ title, message, onCancel, onConfirm, loading }) => (
-  <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onCancel(); }}>
+  <div className="modal-overlay">
     <div className="confirm-box">
       <div className="confirm-header">{title}</div>
       <div className="confirm-body">

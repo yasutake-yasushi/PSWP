@@ -5,6 +5,7 @@ import { AllEnterpriseModule } from 'ag-grid-enterprise';
 import Layout from './components/Layout';
 import DashboardPage from './pages/DashboardPage';
 import ContractItemPage from './pages/ContractItemPage';
+import McaPage from './pages/McaPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 // AG Grid Enterprise モジュール登録
@@ -21,7 +22,7 @@ const App: React.FC = () => (
 
         {/* Master > Definition */}
         <Route path="master/definition/contract-item" element={<ContractItemPage />} />
-        <Route path="master/definition/mca"           element={<PlaceholderPage title="MCA" />} />
+        <Route path="master/definition/mca"           element={<McaPage />} />
 
         {/* Master */}
         <Route path="master/mca-pattern"  element={<PlaceholderPage title="MCA Pattern" />} />
