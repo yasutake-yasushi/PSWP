@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<ContractItem> ContractItems => Set<ContractItem>();
     public DbSet<Mca> Mcas => Set<Mca>();
     public DbSet<McaPattern> McaPatterns => Set<McaPattern>();
+    public DbSet<MailSetting> MailSettings => Set<MailSetting>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

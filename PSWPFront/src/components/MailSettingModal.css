@@ -1,0 +1,83 @@
+/* Tabs (shared pattern with McaPatternModal) */
+.ms-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0 0;
+  border-bottom: 2px solid #dce3ec;
+}
+
+.ms-tab {
+  padding: 6px 18px;
+  background: #f0f4f8;
+  border: 1px solid #dce3ec;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  transition: background 0.15s;
+}
+
+.ms-tab.active {
+  background: #fff;
+  color: #2563eb;
+  border-color: #dce3ec;
+  border-bottom: 2px solid #fff;
+  margin-bottom: -2px;
+}
+
+.ms-tab-body {
+  padding: 12px 0 4px;
+}
+
+/* Address grid */
+.ms-addr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ms-addr-table th {
+  text-align: left;
+  padding: 4px 8px;
+  background: #f0f4f8;
+  border-bottom: 1px solid #dce3ec;
+  font-weight: 600;
+}
+
+.ms-addr-table td {
+  padding: 3px 6px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.ms-input {
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.ms-input:read-only,
+.ms-input:disabled {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.ms-textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: monospace;
+}
+
+.ms-textarea:read-only {
+  background: #f5f5f5;
+  color: #666;
+}
