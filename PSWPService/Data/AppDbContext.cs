@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<McaPattern> McaPatterns => Set<McaPattern>();
     public DbSet<MailSetting> MailSettings => Set<MailSetting>();
     public DbSet<Strategy> Strategies => Set<Strategy>();
+    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
