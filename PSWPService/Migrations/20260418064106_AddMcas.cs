@@ -12,7 +12,7 @@ namespace PSWPService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Mcas",
+                name: "MCA",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -26,7 +26,7 @@ namespace PSWPService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Mcas", x => x.Id);
+                    table.PrimaryKey("PK_MCA", x => x.Id);
                 });
         }
 
@@ -34,7 +34,7 @@ namespace PSWPService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Mcas");
+                name: "MCA");
         }
     }
 }
