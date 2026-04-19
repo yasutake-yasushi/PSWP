@@ -6,7 +6,69 @@ PSWP は、ASP.NET Core Web API（PSWPService）と React + TypeScript（PSWPFro
 
 - `PSWPService/` : バックエンド API（.NET 10 / EF Core）
 - `PSWPFront/` : フロントエンド（React / TypeScript）
-- `PSWPService/sql/` : テーブル定義（SQLite / SQL Server）
+- `Jenkins/` : CI/CD パイプライン設定
+- `PSWPService.Tests/` : バックエンド ユニットテスト
+- `sql/` : テーブル定義（SQLite / SQL Server）
+
+## 📁 プロジェクト構造
+
+```
+PSWP/
+├── Jenkins/                       # CI/CD パイプライン設定
+│   ├── Jenkinsfile                # Jenkins パイプライン定義
+│   ├── README.md                  # Jenkins セットアップガイド
+│   ├── verify.sh                  # ローカル検証スクリプト (Linux/macOS)
+│   └── verify.ps1                 # ローカル検証スクリプト (Windows)
+│
+├── PSWPService/                   # バックエンド API (.NET 10)
+│   ├── Program.cs
+│   ├── PSWPService.csproj
+│   ├── appsettings.json
+│   ├── Controllers/               # API エンドポイント
+│   ├── Models/                    # エンティティモデル
+│   ├── Data/                      # DbContext
+│   ├── Helpers/                   # ユーティリティ
+│   ├── Migrations/                # (使用しません - SQL 主導)
+│   ├── Properties/
+│   ├── sql/                       # SQL スクリプト
+│   │   ├── sqlite/                # SQLite 定義
+│   │   └── sqlserver/             # SQL Server 定義
+│   └── bin/, obj/
+│
+├── PSWPService.Tests/             # バックエンド ユニットテスト (xUnit)
+│   ├── PSWPService.Tests.csproj
+│   ├── coverlet.runsettings       # カバレッジ設定
+│   ├── Helpers/                   # テストヘルパー
+│   ├── Integration/               # 統合テスト
+│   ├── TestInfrastructure/        # テスト基盤
+│   └── bin/, obj/
+│
+├── PSWPFront/                     # フロントエンド (React + TypeScript)
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── vite.config.ts             # カバレッジ設定を含む
+│   ├── public/                    # 静的アセット
+│   ├── src/
+│   │   ├── App.tsx, index.tsx
+│   │   ├── api/                   # API 呼び出し
+│   │   ├── components/            # React コンポーネント
+│   │   ├── pages/                 # ページコンポーネント
+│   │   ├── routes/                # ルーティング定義
+│   │   └── ...
+│   ├── tests/
+│   │   ├── README.md              # テストガイド
+│   │   ├── unit/                  # ユニットテスト (Vitest)
+│   │   └── e2e/                   # E2E テスト (Playwright)
+│   ├── build/                     # ビルド成果物
+│   ├── coverage/                  # テストカバレッジレポート
+│   ├── test-results/              # テスト結果 XML
+│   └── node_modules/
+│
+├── README.md                      # このファイル
+├── PSWP.sln                       # Visual Studio ソリューション
+├── PSWP.code-workspace            # VS Code ワークスペース
+└── .gitignore                     # Git 除外設定
+```
 
 ## 前提
 
@@ -114,16 +176,106 @@ cd PSWPFront
 npx tsc --noEmit
 ```
 
-## テストとカバレッジ
+## 🧪 テストとカバレッジ
 
-`PSWP` ルートで実行:
+### テスト構成
+
+- **バックエンド**: xUnit（PSWPService.Tests/）
+  - ユニットテスト: 各機能の単体テスト
+  - Code Coverage: Coverlet で計測
+  
+- **フロントエンド**: Vitest + Testing Library（PSWPFront/tests/unit/）
+  - ユニットテスト: コンポーネントと API テスト
+  - E2E テスト: Playwright（PSWPFront/tests/e2e/）
+  - Code Coverage: v8 プロバイダで計測
+
+### ローカルでのテスト実行
+
+**バックエンド ユニットテスト:**
 
 ```powershell
-dotnet test .\PSWP.sln -c Release --settings .\PSWPService.Tests\coverlet.runsettings --logger:"junit;LogFilePath=TestResults/{assembly}.xml" --collect:"XPlat Code Coverage" --results-directory TestResults
+dotnet test PSWPService.Tests/PSWPService.Tests.csproj --configuration Release
 ```
 
-この設定では、カバレッジから以下を除外します。
+**フロントエンド ユニットテスト:**
 
+```powershell
+cd PSWPFront
+npm run test:ci           # テスト実行 + JUnit 形式で出力
+npm run test -- --ui      # UI モードでインタラクティブ実行
+```
+
+**E2E テスト:**
+
+```powershell
+cd PSWPFront
+npm run test:e2e          # 開発モード
+npm run test:e2e:ci       # CI モード
+```
+
+**カバレッジレポート生成:**
+
+```powershell
+cd PSWPFront
+npm run test -- --coverage
+# 結果: PSWPFront/coverage/index.html
+```
+
+### テスト結果のディレクトリ
+
+```
+PSWPService.Tests/
+└── TestResults/           # バックエンド テスト結果
+    ├── *.trx              # .NET トレース形式
+    └── *.xml              # xUnit 形式
+
+PSWPFront/
+├── test-results/          # フロントエンド テスト結果
+│   └── vitest/
+│       └── results.xml    # JUnit 形式
+└── coverage/              # カバレッジレポート
+    └── index.html         # HTML レポート
+```
+
+詳細は [PSWPFront/tests/README.md](./PSWPFront/tests/README.md) および [PSWPService.Tests/README.md](./PSWPService.Tests/README.md) を参照。
+
+### CI/CD パイプライン (Jenkins)
+
+Jenkins 上で自動実行される CI/CD パイプラインを構成しています。
+
+**パイプラインの処理:**
+1. リポジトリをチェックアウト
+2. .NET と Node.js 環境をセットアップ（並行実行）
+3. バックエンド・フロントエンドをビルド（並行実行）
+4. ユニットテストを実行（並行実行）
+5. E2E テストを実行
+6. テスト結果とカバレッジレポートを集約
+
+**Jenkins 設定ガイド:**
+
+詳細は [Jenkins/README.md](./Jenkins/README.md) を参照してください。
+
+初期設定時は、Jenkins の **Script Path** に `Jenkins/Jenkinsfile` を指定してください。
+
+**ローカルでの検証:**
+
+```bash
+# Linux/macOS
+./Jenkins/verify.sh
+
+# Windows PowerShell
+.\Jenkins\verify.ps1
+```
+
+### カバレッジ除外設定
+
+カバレッジ計測から以下を除外しています。
+
+**バックエンド (.NET):**
 - `obj` 配下の生成コード
 - `*.g.cs`, `*.g.i.cs`, `*generated*.cs`
 - テストアセンブリ（`PSWPService.Tests`）
+
+**フロントエンド (TypeScript/React):**
+- `src/**/*.d.ts`
+- `src/react-app-env.d.ts`

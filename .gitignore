@@ -11,6 +11,10 @@ TestResults/
 PSWPService.Tests/TestResults/
 
 # ===== Node.js / React =====
+test-results/
+PSWPFront/test-results/
+coverage/
+PSWPFront/coverage/
 node_modules/
 build/
 dist/
