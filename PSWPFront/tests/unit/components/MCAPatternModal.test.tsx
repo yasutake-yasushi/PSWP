@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
 import MCAPatternModal from '../../../src/components/MCAPatternModal';
@@ -74,21 +74,28 @@ describe('MCAPatternModal', () => {
   test('shows error when save fails', async () => {
     const onSave = vi.fn().mockRejectedValue(new Error('save failed'));
 
-    render(
-      <MCAPatternModal
-        mode="add"
-        mcas={mcas as any}
-        contractItemMaster={contractItemMaster as any}
-        onClose={vi.fn()}
-        onSave={onSave}
-      />
-    );
+    await act(async () => {
+      render(
+        <MCAPatternModal
+          mode="add"
+          mcas={mcas as any}
+          contractItemMaster={contractItemMaster as any}
+          onClose={vi.fn()}
+          onSave={onSave}
+        />
+      );
+    });
 
     await userEvent.type(screen.getByPlaceholderText('Alphanumeric only'), 'PAT001');
     await userEvent.selectOptions(screen.getByRole('combobox'), 'MCA001');
-    await userEvent.click(screen.getByRole('button', { name: 'OK' }));
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'OK' }));
+    });
 
-    expect(await screen.findByText('save failed')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('save failed')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'OK' })).toBeEnabled();
+    });
   });
 
   test('supports add/remove rows and bool select value input', async () => {

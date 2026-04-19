@@ -1,5 +1,61 @@
+def runCmd(String unixCmd, String winCmd) {
+    if (isUnix()) {
+        sh unixCmd
+    } else {
+        bat winCmd
+    }
+}
+
+def checkoutSource() {
+    // Preferred path: Multibranch or Pipeline script from SCM
+    if (binding.hasVariable('scm')) {
+        checkout scm
+        return
+    }
+
+    // Fallback path: manually configured Pipeline job
+    def repoUrl = env.GIT_URL?.trim()
+    if (!repoUrl && params.REPO_URL?.trim()) {
+        repoUrl = params.REPO_URL.trim()
+    }
+
+    def branchName = env.BRANCH_NAME?.trim()
+    if (!branchName && params.REPO_BRANCH?.trim()) {
+        branchName = params.REPO_BRANCH.trim()
+    }
+
+    if (repoUrl) {
+        def branchSpec = branchName ? "*/${branchName}" : '*/master'
+        checkout([
+            $class: 'GitSCM',
+            branches: [[name: branchSpec]],
+            userRemoteConfigs: [[url: repoUrl]],
+        ])
+        return
+    }
+
+    error('Source checkout is not configured. Use "Pipeline script from SCM" or set GIT_URL/BRANCH_NAME, or build parameters REPO_URL/REPO_BRANCH.')
+}
+
+def validateWorkspaceLayout() {
+    def requiredPaths = [
+        'PSWPFront/package.json',
+        'PSWPService.Tests/PSWPService.Tests.csproj',
+    ]
+
+    def missing = requiredPaths.findAll { !fileExists(it) }
+    if (!missing.isEmpty()) {
+        error("Checked out repository does not match PSWP layout. Missing: ${missing.join(', ')}. Verify REPO_URL/REPO_BRANCH or Pipeline SCM settings.")
+    }
+}
+
 pipeline {
     agent any
+
+    parameters {
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/yasutake-yasushi/PSWP.git', description: 'Pipeline script利用時に使用するリポジトリURL（例: https://...git）')
+        string(name: 'REPO_BRANCH', defaultValue: 'master', description: 'チェックアウトするブランチ名（例: master または main）')
+    }
 
     options {
         timestamps()
@@ -10,13 +66,20 @@ pipeline {
     environment {
         DOTNET_VERSION = '10.0'
         NODE_VERSION = '20'
+        CI = 'true'
+        NO_COLOR = '1'
+        FORCE_COLOR = '0'
+        npm_config_color = 'false'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 echo '🔄 リポジトリをチェックアウト中...'
-                checkout scm
+                script {
+                    checkoutSource()
+                    validateWorkspaceLayout()
+                }
             }
         }
 
@@ -25,17 +88,27 @@ pipeline {
                 stage('Setup .NET') {
                     steps {
                         echo '⚙️  .NET 環境をセットアップ中...'
-                        sh 'dotnet --version'
-                        sh 'dotnet restore'
+                        script {
+                            runCmd('dotnet --version', 'dotnet --version')
+                            runCmd('dotnet restore', 'dotnet restore')
+                        }
                     }
                 }
                 stage('Setup Node.js') {
                     steps {
                         echo '⚙️  Node.js 環境をセットアップ中...'
-                        sh 'node --version'
-                        sh 'npm --version'
+                        script {
+                            runCmd('node --version', 'node --version')
+                            runCmd('npm --version', 'npm --version')
+                        }
                         dir('PSWPFront') {
-                            sh 'npm install'
+                            script {
+                                runCmd(
+                                    'rm -rf node_modules && npm ci --include=dev',
+                                    'if exist node_modules rmdir /s /q node_modules && npm ci --include=dev'
+                                )
+                                runCmd('npx --no-install vite --version', 'npx --no-install vite --version')
+                            }
                         }
                     }
                 }
@@ -47,14 +120,18 @@ pipeline {
                 stage('Build Backend') {
                     steps {
                         echo '🔨 バックエンド をビルド中...'
-                        sh 'dotnet build --configuration Release'
+                        script {
+                            runCmd('dotnet build --configuration Release', 'dotnet build --configuration Release')
+                        }
                     }
                 }
                 stage('Build Frontend') {
                     steps {
                         echo '🔨 フロントエンド をビルド中...'
                         dir('PSWPFront') {
-                            sh 'npm run build'
+                            script {
+                                runCmd('npm run build', 'npm run build')
+                            }
                         }
                     }
                 }
@@ -66,21 +143,31 @@ pipeline {
                 stage('Backend Unit Tests') {
                     steps {
                         echo '✅ バックエンド ユニットテスト実行中...'
-                        sh '''
-                            dotnet test PSWPService.Tests/PSWPService.Tests.csproj \
-                                --configuration Release \
-                                --no-build \
-                                --logger "trx;LogFileName=TestResults.trx" \
-                                --logger "xunit;LogFileName=xunit-results.xml" \
-                                --collect:"XPlat Code Coverage"
-                        '''
+                        script {
+                            runCmd(
+                                '''dotnet test PSWPService.Tests/PSWPService.Tests.csproj \\
+--configuration Release \\
+--no-build \\
+--logger "trx;LogFileName=TestResults.trx" \\
+--logger "junit;LogFilePath=TestResults/junit-results.xml" \\
+--collect:"XPlat Code Coverage"''',
+                                '''dotnet test PSWPService.Tests/PSWPService.Tests.csproj ^
+--configuration Release ^
+--no-build ^
+--logger "trx;LogFileName=TestResults.trx" ^
+--logger "junit;LogFilePath=TestResults/junit-results.xml" ^
+--collect:"XPlat Code Coverage"'''
+                            )
+                        }
                     }
                 }
                 stage('Frontend Unit Tests') {
                     steps {
                         echo '✅ フロントエンド ユニットテスト実行中...'
                         dir('PSWPFront') {
-                            sh 'npm run test:ci'
+                            script {
+                                runCmd('npm run test:ci', 'npm run test:ci')
+                            }
                         }
                     }
                 }
@@ -91,8 +178,19 @@ pipeline {
             steps {
                 echo '✅ E2E テスト実行中...'
                 dir('PSWPFront') {
-                    sh 'npm run playwright:install || true'
-                    sh 'npm run test:e2e:ci || true'
+                    script {
+                        try {
+                            runCmd('npm run playwright:install', 'npm run playwright:install')
+                        } catch (Exception ignored) {
+                            echo '⚠️  Playwright browser install was skipped.'
+                        }
+
+                        try {
+                            runCmd('npm run test:e2e:ci', 'npm run test:e2e:ci')
+                        } catch (Exception ignored) {
+                            echo '⚠️  E2E test execution failed but pipeline continues by design.'
+                        }
+                    }
                 }
             }
         }
@@ -100,8 +198,17 @@ pipeline {
         stage('Coverage Reports') {
             steps {
                 echo '📊 カバレッジレポートを生成中...'
+                dir('PSWPFront') {
+                    script {
+                        runCmd('npm run test -- --coverage', 'npm run test -- --coverage')
+                    }
+                }
                 script {
-                    echo 'カバレッジレポートが生成されました'
+                    if (fileExists('PSWPFront/coverage/index.html')) {
+                        echo 'カバレッジレポートが生成されました'
+                    } else {
+                        echo '⚠️  カバレッジレポートが見つかりません。publishHTML をスキップします。'
+                    }
                 }
             }
         }
@@ -112,20 +219,40 @@ pipeline {
             echo '📋 テスト結果を収集中...'
 
             // Backend Test Results
-            junit allowEmptyResults: true, testResults: '**/TestResults/**/*.trx,**/TestResults/**/*.xml'
+            script {
+                def hasBackendTrx = fileExists('PSWPService.Tests/TestResults/TestResults.trx')
+                def hasBackendJunit = fileExists('PSWPService.Tests/TestResults/junit-results.xml')
+                if (hasBackendTrx || hasBackendJunit) {
+                    junit allowEmptyResults: true, testResults: '**/TestResults/**/*.trx,**/TestResults/**/*.xml'
+                } else {
+                    echo '⚠️  Backend test reports not found. junit publish skipped.'
+                }
+            }
 
             // Frontend Test Results
-            junit allowEmptyResults: true, testResults: 'PSWPFront/test-results/**/*.xml'
+            script {
+                if (fileExists('PSWPFront/test-results/vitest/results.xml')) {
+                    junit allowEmptyResults: true, testResults: 'PSWPFront/test-results/**/*.xml'
+                } else {
+                    echo '⚠️  Frontend test reports not found. junit publish skipped.'
+                }
+            }
 
-            // Code Coverage (if using plugins)
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'PSWPFront/coverage',
-                reportFiles: 'index.html',
-                reportName: 'Frontend Coverage Report'
-            ])
+            // Code Coverage (if generated)
+            script {
+                if (fileExists('PSWPFront/coverage/index.html')) {
+                    publishHTML([
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'PSWPFront/coverage',
+                        reportFiles: 'index.html',
+                        reportName: 'Frontend Coverage Report'
+                    ])
+                } else {
+                    echo '⚠️  Frontend coverage report not found. publishHTML skipped.'
+                }
+            }
 
             cleanWs(deleteDirs: true, patterns: [[pattern: '**/bin', type: 'INCLUDE'], [pattern: '**/obj', type: 'INCLUDE']])
         }

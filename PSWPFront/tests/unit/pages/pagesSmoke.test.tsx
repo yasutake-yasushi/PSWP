@@ -1,26 +1,10 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
 
 vi.mock('../../../src/components/CrudGridPage', () => ({
-  default: ({ title, onCreate, onUpdate, onDelete, getDeleteMessage, renderModal }: any) => {
-    void onCreate?.({});
-    void onUpdate?.(1, {});
-    void onDelete?.(1);
-    void getDeleteMessage?.({
-      id: 1,
-      itemName: 'x',
-      mcaId: 'x',
-      mcaPatternId: 'x',
-      templateId: 'x',
-      eventType: 'x',
-      strategyType: 'x',
-      portId: 'x',
-    });
-    void renderModal?.({ mode: 'add', item: undefined, onClose: vi.fn(), onSave: vi.fn() });
-    return <div>{title}</div>;
-  },
+  default: ({ title }: any) => <div>{title}</div>,
 }));
 
 vi.mock('../../../src/api/systemSetting', () => ({
@@ -103,6 +87,8 @@ import StrategyPage from '../../../src/pages/StrategyPage';
 import SystemSettingPage from '../../../src/pages/SystemSettingPage';
 import PlaceholderPage from '../../../src/pages/PlaceholderPage';
 import { getSystemSetting, updateSystemSetting } from '../../../src/api/systemSetting';
+import { getMCAs } from '../../../src/api/mcas';
+import { getContractItems } from '../../../src/api/contractItems';
 
 describe('pages smoke', () => {
   test('renders CRUD pages via mocked grid shell', async () => {
@@ -117,18 +103,28 @@ describe('pages smoke', () => {
     expect(screen.getByText('MCA Pattern')).toBeInTheDocument();
     expect(screen.getByText('Mail Setting')).toBeInTheDocument();
     expect(screen.getByText('Strategy')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(vi.mocked(getMCAs)).toHaveBeenCalled();
+      expect(vi.mocked(getContractItems)).toHaveBeenCalled();
+    });
   });
 
   test('renders system setting and can save', async () => {
-    render(<SystemSettingPage />);
+    await act(async () => {
+      render(<SystemSettingPage />);
+    });
 
     await screen.findByDisplayValue('mips.csv');
     await userEvent.clear(screen.getByDisplayValue('mips.csv'));
     await userEvent.type(screen.getByPlaceholderText('e.g. C:\\data\\mips\\input.csv'), 'next.csv');
-    await userEvent.click(screen.getByRole('button', { name: 'Update' }));
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'Update' }));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Saved successfully.')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Update' })).toBeEnabled();
     });
   });
 
@@ -143,12 +139,19 @@ describe('pages smoke', () => {
   test('shows error when saving system setting fails', async () => {
     vi.mocked(updateSystemSetting).mockRejectedValueOnce(new Error('save failed'));
 
-    render(<SystemSettingPage />);
+    await act(async () => {
+      render(<SystemSettingPage />);
+    });
     await screen.findByDisplayValue('mips.csv');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Update' }));
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'Update' }));
+    });
 
-    expect(await screen.findByText('save failed')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('save failed')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Update' })).toBeEnabled();
+    });
   });
 
   test('renders placeholder page', () => {

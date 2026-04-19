@@ -7,6 +7,10 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
+
 echo "======================================"
 echo "Jenkins パイプライン ローカル検証"
 echo "======================================"
@@ -74,7 +78,9 @@ echo ""
 # Step 3: フロントエンド インストール
 log_info "Step 3: Node.js 依存関係をインストール中..."
 cd PSWPFront
-npm install > /dev/null 2>&1
+rm -rf node_modules
+npm ci --include=dev > /dev/null 2>&1
+npx --no-install vite --version > /dev/null 2>&1
 cd ..
 log_success "npm インストール完了"
 
@@ -108,7 +114,7 @@ if dotnet test PSWPService.Tests/PSWPService.Tests.csproj \
     --configuration Release \
     --no-build \
     --logger "trx;LogFileName=TestResults.trx" \
-    --logger "xunit;LogFileName=xunit-results.xml" \
+    --logger "junit;LogFilePath=TestResults/junit-results.xml" \
     --collect:"XPlat Code Coverage" > /dev/null 2>&1; then
     log_success "バックエンド ユニットテスト成功"
     
@@ -156,8 +162,16 @@ cd ..
 echo ""
 
 # Step 8: カバレッジ レポート
-log_info "Step 8: カバレッジレポート確認..."
-if [ -d "PSWPFront/coverage" ]; then
+log_info "Step 8: カバレッジレポート生成中..."
+cd PSWPFront
+if npm run test -- --coverage > /dev/null 2>&1; then
+    log_success "フロントエンド カバレッジ生成成功"
+else
+    log_error "フロントエンド カバレッジ生成失敗"
+fi
+cd ..
+
+if [ -f "PSWPFront/coverage/index.html" ]; then
     log_success "フロントエンド カバレッジレポート生成: PSWPFront/coverage/index.html"
 else
     log_warning "フロントエンド カバレッジレポート見つかりません"

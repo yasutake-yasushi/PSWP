@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
 import CrudGridPage from '../../../src/components/CrudGridPage';
@@ -42,32 +42,41 @@ describe('CrudGridPage', () => {
     const onUpdate = vi.fn().mockResolvedValue(undefined);
     const onDelete = vi.fn().mockResolvedValue(undefined);
 
-    render(
-      <CrudGridPage<{ id: number; name: string }, { name: string }>
-        title="Dummy"
-        columnDefs={[{ field: 'name', headerName: 'Name' } as any]}
-        fetchAll={fetchAll}
-        onCreate={onCreate}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-        getDeleteMessage={() => 'delete me'}
-        renderModal={({ mode }) => <div>Modal:{mode}</div>}
-      />
-    );
+    await act(async () => {
+      render(
+        <CrudGridPage<{ id: number; name: string }, { name: string }>
+          title="Dummy"
+          columnDefs={[{ field: 'name', headerName: 'Name' } as any]}
+          fetchAll={fetchAll}
+          onCreate={onCreate}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          getDeleteMessage={() => 'delete me'}
+          renderModal={({ mode }) => <div>Modal:{mode}</div>}
+        />
+      );
+    });
 
-    await waitFor(() => expect(fetchAll).toHaveBeenCalled());
+    await waitFor(() => expect(fetchAll).toHaveBeenCalledTimes(1));
 
     await userEvent.click(screen.getByRole('button', { name: '+ Add Row' }));
     expect(screen.getByText('Modal:add')).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: '⟳ Reload' }));
-    expect(fetchAll).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: '⟳ Reload' }));
+    });
+    await waitFor(() => expect(fetchAll).toHaveBeenCalledTimes(2));
 
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
     expect(screen.getByText('Delete Confirmation')).toBeInTheDocument();
 
-    await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
-    await waitFor(() => expect(onDelete).toHaveBeenCalledWith(1));
+    await act(async () => {
+      await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+    });
+    await waitFor(() => {
+      expect(onDelete).toHaveBeenCalledWith(1);
+      expect(fetchAll).toHaveBeenCalledTimes(3);
+    });
   });
 
   test('shows error when initial fetch fails', async () => {
@@ -93,24 +102,31 @@ describe('CrudGridPage', () => {
     const fetchAll = vi.fn().mockResolvedValue([{ id: 1, name: 'row1' }]);
     const onDelete = vi.fn().mockRejectedValue(new Error('delete failed'));
 
-    render(
-      <CrudGridPage<{ id: number; name: string }, { name: string }>
-        title="Dummy"
-        columnDefs={[{ field: 'name', headerName: 'Name' } as any]}
-        fetchAll={fetchAll}
-        onCreate={vi.fn().mockResolvedValue(undefined)}
-        onUpdate={vi.fn().mockResolvedValue(undefined)}
-        onDelete={onDelete}
-        getDeleteMessage={() => 'delete me'}
-        renderModal={() => null}
-      />
-    );
+    await act(async () => {
+      render(
+        <CrudGridPage<{ id: number; name: string }, { name: string }>
+          title="Dummy"
+          columnDefs={[{ field: 'name', headerName: 'Name' } as any]}
+          fetchAll={fetchAll}
+          onCreate={vi.fn().mockResolvedValue(undefined)}
+          onUpdate={vi.fn().mockResolvedValue(undefined)}
+          onDelete={onDelete}
+          getDeleteMessage={() => 'delete me'}
+          renderModal={() => null}
+        />
+      );
+    });
 
-    await waitFor(() => expect(fetchAll).toHaveBeenCalled());
+    await waitFor(() => expect(fetchAll).toHaveBeenCalledTimes(1));
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-    await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+    await act(async () => {
+      await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+    });
 
-    expect(await screen.findByText('delete failed')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('delete failed')).toBeInTheDocument();
+      expect(screen.getAllByRole('button', { name: 'Delete' })[1]).toBeEnabled();
+    });
   });
 
   test('calls onCreate and onUpdate from modal save callback', async () => {
@@ -118,29 +134,41 @@ describe('CrudGridPage', () => {
     const onCreate = vi.fn().mockResolvedValue(undefined);
     const onUpdate = vi.fn().mockResolvedValue(undefined);
 
-    render(
-      <CrudGridPage<{ id: number; name: string }, { name: string }>
-        title="Dummy"
-        columnDefs={[{ field: 'name', headerName: 'Name' } as any]}
-        fetchAll={fetchAll}
-        onCreate={onCreate}
-        onUpdate={onUpdate}
-        onDelete={vi.fn().mockResolvedValue(undefined)}
-        getDeleteMessage={() => 'delete me'}
-        renderModal={({ mode, onSave }) => (
-          <button type="button" onClick={() => onSave({ name: mode })}>Save {mode}</button>
-        )}
-      />
-    );
+    await act(async () => {
+      render(
+        <CrudGridPage<{ id: number; name: string }, { name: string }>
+          title="Dummy"
+          columnDefs={[{ field: 'name', headerName: 'Name' } as any]}
+          fetchAll={fetchAll}
+          onCreate={onCreate}
+          onUpdate={onUpdate}
+          onDelete={vi.fn().mockResolvedValue(undefined)}
+          getDeleteMessage={() => 'delete me'}
+          renderModal={({ mode, onSave }) => (
+            <button type="button" onClick={() => onSave({ name: mode })}>Save {mode}</button>
+          )}
+        />
+      );
+    });
 
-    await waitFor(() => expect(fetchAll).toHaveBeenCalled());
+    await waitFor(() => expect(fetchAll).toHaveBeenCalledTimes(1));
 
     await userEvent.click(screen.getByRole('button', { name: '+ Add Row' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save add' }));
-    await waitFor(() => expect(onCreate).toHaveBeenCalledWith({ name: 'add' }));
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'Save add' }));
+    });
+    await waitFor(() => {
+      expect(onCreate).toHaveBeenCalledWith({ name: 'add' });
+      expect(fetchAll).toHaveBeenCalledTimes(2);
+    });
 
     await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save edit' }));
-    await waitFor(() => expect(onUpdate).toHaveBeenCalledWith(1, { name: 'edit' }));
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'Save edit' }));
+    });
+    await waitFor(() => {
+      expect(onUpdate).toHaveBeenCalledWith(1, { name: 'edit' });
+      expect(fetchAll).toHaveBeenCalledTimes(3);
+    });
   });
 });

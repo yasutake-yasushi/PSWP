@@ -31,7 +31,6 @@ PSWP/
 3. **JUnit Plugin** - テスト結果の集約
 4. **Timestamper** - ログのタイムスタンプ
 5. **HTML Publisher** - HTMLレポート表示（カバレッジレポート用）
-6. **xUnit Plugin** - xUnit形式テスト結果の解析
 
 **プラグインのインストール手順:**
 - Jenkins 管理画面 → プラグインの管理 → 利用可能 タブから検索
@@ -52,6 +51,10 @@ PSWP/
    - **Script Path: `Jenkins/Jenkinsfile` ⚠️ 必須**
 5. **保存**
 
+`checkout scm` エラーを避けるため、上記の **Pipeline script from SCM** を推奨します。
+
+もし `Pipeline script` 方式で作成する場合は、Jenkins ジョブ側で `GIT_URL`（必要に応じて `BRANCH_NAME`）を環境変数として設定してください。
+
 #### 方法2: Declarative Pipeline UI
 
 1. **New Item** をクリック
@@ -61,6 +64,11 @@ PSWP/
    - Definition: **Pipeline script** を選択
    - `Jenkinsfile` の内容を **Script** エリアにコピー＆ペースト
 5. **保存**
+
+この方式では、Jenkinsfile のビルドパラメータを設定して実行します。
+
+- REPO_URL: 例 https://github.com/your-org/your-repo.git
+- REPO_BRANCH: 例 master または main
 
 ### 3. ローカルでの検証
 
@@ -72,15 +80,53 @@ PSWP/
 ```
 
 **Windows PowerShell:**
-```powershell
-.\Jenkins\verify.ps1
+  --no-build \
+  --logger "trx;LogFileName=TestResults.trx" \
+  --logger "junit;LogFilePath=TestResults/junit-results.xml" \
+  --collect:"XPlat Code Coverage"
 ```
 
-## 📋 パイプラインの実行フロー
+### フロントエンド依存関係とテスト実行
 
-### ステージ構成
-
+```bash
+cd PSWPFront
+rm -rf node_modules
+npm ci --include=dev
+npx --no-install vite --version
+npm run test:ci
+npm run test:e2e:ci
+npm run test -- --coverage
 ```
+
+Windows では `rm -rf node_modules` の代わりに PowerShell で削除するか、ローカル検証用の [Jenkins/verify.ps1](Jenkins/verify.ps1) を使用してください。
+
+### Jenkins コンソールに `\u001b[90m` のような文字が出る
+
+原因:
+- Vitest や npm の ANSI カラー制御コードが Jenkins のコンソールにそのまま表示されている
+
+現在の [Jenkins/Jenkinsfile](Jenkins/Jenkinsfile) では、以下の環境変数で色付き出力を抑制しています。
+
+```groovy
+environment {
+    CI = 'true'
+    NO_COLOR = '1'
+    FORCE_COLOR = '0'
+    npm_config_color = 'false'
+}
+```
+
+そのため、最新の Jenkinsfile を使っていれば通常は読みにくい制御コードは大きく減ります。
+
+### フロントエンドテストで `act(...)` 警告が出る
+
+これは Jenkins の表示崩れではなく、React テスト中の state update が `act(...)` で適切にラップされていないことを示す警告です。
+
+現状:
+- ビルド失敗要因ではない
+- ログには出るがテスト自体は通る場合がある
+
+警告自体を消すには、対象テストコードを修正する必要があります。
 1. Checkout          : リポジトリから最新コードを取得
 2. Setup             : .NET と Node.js 環境をセットアップ（並行実行）
 3. Build             : バックエンド・フロントエンドをビルド（並行実行）
@@ -226,11 +272,57 @@ npm --version
 - テスト結果 XML ファイルが生成されているか確認
 - `post` ブロックの `junit` パターンが正しいか確認
 
-### 4. E2E テスト がタイムアウト
+### 4. Source checkout is not configured エラー
+
+エラー例:
+
+```
+ERROR: Source checkout is not configured. Use "Pipeline script from SCM" or set GIT_URL/BRANCH_NAME.
+```
+
+解決方法:
+1. 推奨: ジョブ定義を Pipeline script from SCM にする
+2. もしくは、Build with Parameters で REPO_URL と REPO_BRANCH を設定して実行する
+
+例:
+- REPO_URL: https://github.com/your-org/your-repo.git
+- REPO_BRANCH: master
+
+### 5. `MSB1009` や `npm error Missing script: test:ci` が同時に出る
+
+症状例:
+- `MSBUILD : error MSB1009: プロジェクト ファイルが存在しません。`
+- `npm error Missing script: "test:ci"`
+
+原因:
+- PSWP とは異なるリポジトリ、または誤ったブランチをチェックアウトしている
+
+解決方法:
+1. REPO_URL が PSWP リポジトリを指していることを確認
+2. REPO_BRANCH が正しいブランチ（master/main）であることを確認
+3. Jenkins ジョブの Workspace を一度削除して再実行
+4. 可能なら `Pipeline script from SCM` に切り替える
+
+### 6. E2E テスト がタイムアウト
 
 **解決方法:**
 - `timeout(time: 30, unit: 'MINUTES')` の値を増やす
 - または E2E テストを別パイプラインに分離
+
+### 5. `checkout scm` エラー
+
+エラー例:
+
+```
+ERROR: 'checkout scm' is only available when using "Multibranch Pipeline" or "Pipeline script from SCM"
+```
+
+**原因:**
+- ジョブ定義が `Pipeline script` で、SCM 情報を Jenkins が自動的に持っていない
+
+**解決方法:**
+1. ジョブ定義を `Pipeline script from SCM` に変更する（推奨）
+2. もしくはジョブに `GIT_URL`（必要なら `BRANCH_NAME`）を設定する
 
 ## ✅ ビルド成功時の期待動作
 

@@ -27,6 +27,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# ===== Jenkins / Local verify artifacts =====
+/agent.jar
+/Jenkins/agent.jar
+/PSWPService.Tests/junit-results.xml
+/package-lock.json
+
 # ===== OS =====
 .DS_Store
 Thumbs.db

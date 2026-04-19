@@ -1,211 +1,170 @@
-# Jenkins CI/CD パイプライン ローカル検証スクリプト (PowerShell)
-# 
-# このスクリプトは、Jenkins上で実行されるのと同じテスト手順を
-# ローカルマシンで実行して検証します。
-#
-# 実行: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-#      .\verify.ps1
+# Jenkins CI local verification script (PowerShell)
+# Usage: powershell -ExecutionPolicy Bypass -File .\verify.ps1 [-SkipE2E]
 
 param(
-    [switch]$NoSkip = $false
+    [switch]$SkipE2E = $false
 )
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 
-# Color codes for output
 function Write-Info {
     param([string]$Message)
     Write-Host "[INFO] $Message" -ForegroundColor Cyan
 }
 
-function Write-Success {
+function Write-Ok {
     param([string]$Message)
-    Write-Host "[✓] $Message" -ForegroundColor Green
+    Write-Host "[OK]   $Message" -ForegroundColor Green
 }
 
-function Write-Error {
+function Write-Ng {
     param([string]$Message)
-    Write-Host "[✗] $Message" -ForegroundColor Red
+    Write-Host "[NG]   $Message" -ForegroundColor Red
 }
 
-function Write-Warning {
+function Write-Warn {
     param([string]$Message)
-    Write-Host "[!] $Message" -ForegroundColor Yellow
+    Write-Host "[WARN] $Message" -ForegroundColor Yellow
 }
 
-$testsPassed = 0
-$testsFailed = 0
+function Invoke-External {
+    param(
+        [Parameter(Mandatory = $true)][string]$FilePath,
+        [string[]]$Arguments = @(),
+        [string]$WorkingDirectory
+    )
 
-Write-Host ""
-Write-Host "======================================" -ForegroundColor Cyan
-Write-Host "Jenkins パイプライン ローカル検証" -ForegroundColor Cyan
-Write-Host "======================================" -ForegroundColor Cyan
-Write-Host ""
+    $argLine = if ($Arguments.Count -gt 0) { $Arguments -join ' ' } else { '' }
+    Write-Host "  > $FilePath $argLine" -ForegroundColor DarkGray
 
-# Step 1: チェック環境
-Write-Info "Step 1: 環境をチェック中..."
+    if ($WorkingDirectory) {
+        Push-Location $WorkingDirectory
+    }
 
-try {
-    $dotnetVersion = dotnet --version
-    Write-Success ".NET SDK インストール確認: $dotnetVersion"
-}
-catch {
-    Write-Error ".NET SDK が見つかりません"
-    exit 1
-}
-
-try {
-    $nodeVersion = node --version
-    Write-Success "Node.js インストール確認: $nodeVersion"
-}
-catch {
-    Write-Error "Node.js が見つかりません"
-    exit 1
-}
-
-try {
-    $npmVersion = npm --version
-    Write-Success "npm インストール確認: $npmVersion"
-}
-catch {
-    Write-Error "npm が見つかりません"
-    exit 1
-}
-
-Write-Host ""
-
-# Step 2: バックエンド リストア
-Write-Info "Step 2: .NET 依存関係をリストア中..."
-try {
-    dotnet restore | Out-Null
-    Write-Success ".NET リストア完了"
-}
-catch {
-    Write-Error ".NET リストア失敗: $_"
-}
-
-Write-Host ""
-
-# Step 3: フロントエンド インストール
-Write-Info "Step 3: Node.js 依存関係をインストール中..."
-try {
-    Push-Location "PSWPFront"
-    npm install | Out-Null
-    Pop-Location
-    Write-Success "npm インストール完了"
-}
-catch {
-    Write-Error "npm インストール失敗: $_"
-}
-
-Write-Host ""
-
-# Step 4: ビルド
-Write-Info "Step 4: ビルド中..."
-Write-Warning "バックエンド ビルド..."
-try {
-    dotnet build --configuration Release | Out-Null
-    Write-Success "バックエンド ビルド成功"
-}
-catch {
-    Write-Error "バックエンド ビルド失敗: $_"
-    exit 1
-}
-
-Write-Warning "フロントエンド ビルド..."
-try {
-    Push-Location "PSWPFront"
-    npm run build | Out-Null
-    Pop-Location
-    Write-Success "フロントエンド ビルド成功"
-}
-catch {
-    Write-Error "フロントエンド ビルド失敗: $_"
-    exit 1
-}
-
-Write-Host ""
-
-# Step 5: バックエンド テスト
-Write-Info "Step 5: バックエンド ユニットテスト実行中..."
-try {
-    dotnet test PSWPService.Tests/PSWPService.Tests.csproj `
-        --configuration Release `
-        --no-build `
-        --logger "trx;LogFileName=TestResults.trx" `
-        --logger "xunit;LogFileName=xunit-results.xml" `
-        --collect:"XPlat Code Coverage" | Out-Null
-    
-    Write-Success "バックエンド ユニットテスト成功"
-    
-    $testResults = Get-ChildItem -Path "PSWPService.Tests/TestResults" -Filter "*.trx" -ErrorAction SilentlyContinue
-    if ($testResults) {
-        Write-Info "  - テスト結果: $($testResults.Count) 個のトレース ファイル"
+    try {
+        & $FilePath @Arguments
+        if ($LASTEXITCODE -ne 0) {
+            throw "$FilePath exited with code $LASTEXITCODE"
+        }
+    }
+    finally {
+        if ($WorkingDirectory) {
+            Pop-Location
+        }
     }
 }
-catch {
-    Write-Error "バックエンド ユニットテスト失敗: $_"
-}
 
-Write-Host ""
+function Invoke-Step {
+    param(
+        [Parameter(Mandatory = $true)][string]$Title,
+        [Parameter(Mandatory = $true)][scriptblock]$Action,
+        [switch]$ContinueOnError
+    )
 
-# Step 6: フロントエンド テスト
-Write-Info "Step 6: フロントエンド ユニットテスト実行中..."
-try {
-    Push-Location "PSWPFront"
-    npm run test:ci | Out-Null
-    Pop-Location
-    
-    Write-Success "フロントエンド ユニットテスト成功"
-    
-    if (Test-Path "PSWPFront/test-results/vitest/results.xml") {
-        Write-Info "  - テスト結果: PSWPFront/test-results/vitest/results.xml"
+    Write-Info $Title
+    try {
+        & $Action
+        Write-Ok "${Title}: success"
+        return $true
+    }
+    catch {
+        Write-Ng "${Title}: failed - $($_.Exception.Message)"
+        if (-not $ContinueOnError) {
+            throw
+        }
+        return $false
     }
 }
-catch {
-    Write-Error "フロントエンド ユニットテスト失敗: $_"
+
+function Remove-IfExists {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (Test-Path $Path) {
+        Remove-Item -LiteralPath $Path -Recurse -Force
+    }
 }
 
-Write-Host ""
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = Resolve-Path (Join-Path $scriptDir '..')
 
-# Step 7: E2E テスト
-Write-Info "Step 7: E2E テスト実行中..."
+Write-Host ''
+Write-Host '======================================' -ForegroundColor Cyan
+Write-Host 'Jenkins pipeline local verification' -ForegroundColor Cyan
+Write-Host '======================================' -ForegroundColor Cyan
+Write-Host ''
+Write-Info "Repo root: $repoRoot"
+
+Push-Location $repoRoot
 try {
-    Push-Location "PSWPFront"
-    npm run playwright:install | Out-Null
-    Write-Warning "  - Playwright ブラウザのインストール完了"
-    
-    npm run test:e2e:ci | Out-Null
+    Invoke-Step -Title 'Step 1: Environment check (.NET / Node / npm)' -Action {
+        Invoke-External -FilePath 'dotnet' -Arguments @('--version')
+        Invoke-External -FilePath 'node' -Arguments @('--version')
+        Invoke-External -FilePath 'npm' -Arguments @('--version')
+    }
+
+    Invoke-Step -Title 'Step 2: dotnet restore' -Action {
+        Invoke-External -FilePath 'dotnet' -Arguments @('restore')
+    }
+
+    Invoke-Step -Title 'Step 3: npm install' -Action {
+        Remove-IfExists -Path 'PSWPFront/node_modules'
+        Invoke-External -FilePath 'npm' -Arguments @('ci', '--include=dev') -WorkingDirectory 'PSWPFront'
+        Invoke-External -FilePath 'npx' -Arguments @('--no-install', 'vite', '--version') -WorkingDirectory 'PSWPFront'
+    }
+
+    Invoke-Step -Title 'Step 4: Build backend and frontend' -Action {
+        Invoke-External -FilePath 'dotnet' -Arguments @('build', '--configuration', 'Release')
+        Invoke-External -FilePath 'npm' -Arguments @('run', 'build') -WorkingDirectory 'PSWPFront'
+    }
+
+    Invoke-Step -Title 'Step 5: Backend unit tests' -Action {
+        Invoke-External -FilePath 'dotnet' -Arguments @(
+            'test', 'PSWPService.Tests/PSWPService.Tests.csproj',
+            '--configuration', 'Release',
+            '--no-build',
+            '--logger', 'trx;LogFileName=TestResults.trx',
+            '--logger', 'junit;LogFilePath=TestResults/junit-results.xml',
+            '--collect:XPlat Code Coverage'
+        )
+    }
+
+    Invoke-Step -Title 'Step 6: Frontend unit tests' -Action {
+        Invoke-External -FilePath 'npm' -Arguments @('run', 'test:ci') -WorkingDirectory 'PSWPFront'
+    }
+
+    if ($SkipE2E) {
+        Write-Warn 'Step 7: E2E skipped (-SkipE2E)'
+    }
+    else {
+        Invoke-Step -Title 'Step 7: E2E tests' -Action {
+            Invoke-External -FilePath 'npm' -Arguments @('run', 'playwright:install') -WorkingDirectory 'PSWPFront'
+            Invoke-External -FilePath 'npm' -Arguments @('run', 'test:e2e:ci') -WorkingDirectory 'PSWPFront'
+        } -ContinueOnError
+    }
+
+    Invoke-Step -Title 'Step 8: Frontend coverage report' -Action {
+        Invoke-External -FilePath 'npm' -Arguments @('run', 'test', '--', '--coverage') -WorkingDirectory 'PSWPFront'
+    }
+
+    if (Test-Path 'PSWPFront/coverage/index.html') {
+        Write-Ok 'Coverage report exists: PSWPFront/coverage/index.html'
+    }
+    else {
+        Write-Warn 'Coverage report not found: PSWPFront/coverage/index.html'
+    }
+
+    Write-Host ''
+    Write-Host '======================================' -ForegroundColor Cyan
+    Write-Host 'Verification complete' -ForegroundColor Cyan
+    Write-Host '======================================' -ForegroundColor Cyan
+    Write-Host ''
+    Write-Ok 'Main steps completed.'
+    Write-Host 'Output paths:' -ForegroundColor Green
+    Write-Host '  Backend: PSWPService.Tests/TestResults/' -ForegroundColor Gray
+    Write-Host '  Frontend: PSWPFront/test-results/' -ForegroundColor Gray
+    Write-Host '  Coverage: PSWPFront/coverage/index.html' -ForegroundColor Gray
+}
+finally {
     Pop-Location
-    
-    Write-Success "E2E テスト成功"
 }
-catch {
-    Write-Warning "E2E テスト スキップ（オプション）"
-}
-
-Write-Host ""
-
-# Step 8: カバレッジ レポート
-Write-Info "Step 8: カバレッジレポート確認..."
-if (Test-Path "PSWPFront/coverage") {
-    Write-Success "フロントエンド カバレッジレポート生成: PSWPFront/coverage/index.html"
-}
-else {
-    Write-Warning "フロントエンド カバレッジレポート見つかりません"
-}
-
-Write-Host ""
-
-# 結果サマリー
-Write-Host "======================================" -ForegroundColor Cyan
-Write-Host "検証完了" -ForegroundColor Cyan
-Write-Host "======================================" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "✓ すべてのチェックが成功しました！" -ForegroundColor Green
-Write-Host ""
-Write-Host "📋 テスト結果:" -ForegroundColor Green
-Write-Host "  Backend: PSWPService.Tests/TestResults/" -ForegroundColor Gray
-Write-Host "  Frontend: PSWPFront/test-results/" -ForegroundColor Gray
-Write-Host "  Coverage: PSWPFront/coverage/index.html" -ForegroundColor Gray
-Write-Host ""
