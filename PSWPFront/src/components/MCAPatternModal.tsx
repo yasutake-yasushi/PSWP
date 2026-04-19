@@ -134,6 +134,7 @@ const MCAPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
     if (!mcaId.trim()) { setError('MCA ID is required'); return; }
     setSaving(true);
     setError(null);
+    let closeAfterSave = false;
     try {
       await onSave({
         mcaPatternId: patternId,
@@ -142,11 +143,14 @@ const MCAPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
         tradeItems: JSON.stringify(tradeRows),
         specialNotes: specialNotes || null,
       });
+      closeAfterSave = true;
       onClose();
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setSaving(false);
+      if (!closeAfterSave) {
+        setSaving(false);
+      }
     }
   };
 

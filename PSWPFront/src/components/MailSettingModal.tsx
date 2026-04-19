@@ -65,6 +65,7 @@ const MailSettingModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
     if (!templateId.trim()) { setError('Template ID is required'); return; }
     setSaving(true);
     setError(null);
+    let closeAfterSave = false;
     try {
       await onSave({
         eventType,
@@ -73,11 +74,14 @@ const MailSettingModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
         addresses: JSON.stringify(addresses),
         message,
       });
+      closeAfterSave = true;
       onClose();
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setSaving(false);
+      if (!closeAfterSave) {
+        setSaving(false);
+      }
     }
   };
 

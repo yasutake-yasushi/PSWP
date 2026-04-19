@@ -65,13 +65,17 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
     if (!form.itemName.trim()) { setError('Item Name is required'); return; }
     setSaving(true);
     setError(null);
+    let closeAfterSave = false;
     try {
       await onSave(form);
+      closeAfterSave = true;
       onClose();
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setSaving(false);
+      if (!closeAfterSave) {
+        setSaving(false);
+      }
     }
   };
 

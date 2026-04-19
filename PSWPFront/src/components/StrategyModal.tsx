@@ -35,13 +35,17 @@ const StrategyModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
     if (!portId.trim()) { setError('Port ID is required'); return; }
     setSaving(true);
     setError(null);
+    let closeAfterSave = false;
     try {
       await onSave({ strategyType, portId });
+      closeAfterSave = true;
       onClose();
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setSaving(false);
+      if (!closeAfterSave) {
+        setSaving(false);
+      }
     }
   };
 
