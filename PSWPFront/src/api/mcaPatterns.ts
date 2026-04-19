@@ -1,3 +1,5 @@
+import { createCrudApi } from './crudApi';
+
 export interface ItemValueRow {
   itemName: string;
   value: string;
@@ -23,41 +25,15 @@ export interface MCAPatternInput {
 }
 
 
-const BASE_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:5232';
+const mcaPatternsApi = createCrudApi<MCAPattern, MCAPatternInput>('/api/mcapatterns', {
+  list: 'Failed to fetch MCA patterns',
+  create: 'Failed to create MCA pattern',
+  update: 'Failed to update MCA pattern',
+  delete: 'Failed to delete MCA pattern',
+});
 
-export const getMCAPatterns = async (): Promise<MCAPattern[]> => {
-  const res = await fetch(`${BASE_URL}/api/mcapatterns`);
-  if (!res.ok) throw new Error(`GET /api/mcapatterns failed: ${res.status}`);
-  return res.json();
-};
-
-export const getMCAPattern = async (id: number): Promise<MCAPattern> => {
-  const res = await fetch(`${BASE_URL}/api/mcapatterns/${id}`);
-  if (!res.ok) throw new Error(`GET /api/mcapatterns/${id} failed: ${res.status}`);
-  return res.json();
-};
-
-export const createMCAPattern = async (input: MCAPatternInput): Promise<MCAPattern> => {
-  const res = await fetch(`${BASE_URL}/api/mcapatterns`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!res.ok) throw new Error(`POST /api/mcapatterns failed: ${res.status}`);
-  return res.json();
-};
-
-export const updateMCAPattern = async (id: number, input: MCAPatternInput): Promise<MCAPattern> => {
-  const res = await fetch(`${BASE_URL}/api/mcapatterns/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!res.ok) throw new Error(`PUT /api/mcapatterns/${id} failed: ${res.status}`);
-  return res.json();
-};
-
-export const deleteMCAPattern = async (id: number): Promise<void> => {
-  const res = await fetch(`${BASE_URL}/api/mcapatterns/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error(`DELETE /api/mcapatterns/${id} failed: ${res.status}`);
-};
+export const getMCAPatterns = mcaPatternsApi.getAll;
+export const getMCAPattern = mcaPatternsApi.getById;
+export const createMCAPattern = mcaPatternsApi.create;
+export const updateMCAPattern = mcaPatternsApi.update;
+export const deleteMCAPattern = mcaPatternsApi.remove;

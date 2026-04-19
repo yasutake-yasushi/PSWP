@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Strategy, StrategyInput } from '../api/strategies';
+import { MODAL_TITLES, ModalMode } from './modalShared';
 import './ContractItemModal.css';
-
-export type ModalMode = 'add' | 'view' | 'edit';
 
 interface Props {
   mode: ModalMode;
@@ -12,8 +11,6 @@ interface Props {
 }
 
 const STRATEGY_TYPES = ['Lending', 'Borrowing', 'Funding', 'Self Funding'];
-const TITLE: Record<ModalMode, string> = { add: 'Add', view: 'View', edit: 'Edit' };
-
 const StrategyModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
   const [strategyType, setStrategyType] = useState('');
   const [portId, setPortId]             = useState('');
@@ -52,12 +49,12 @@ const StrategyModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
     <div className="modal-overlay">
       <div className="modal-box" style={{ width: 440 }}>
         <div className="modal-header">
-          <span>Strategy — {TITLE[mode]}</span>
+          <span>Strategy — {MODAL_TITLES[mode]}</span>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
         {item && mode !== 'add' && (
-          <div className="modal-uuid">UUID: <code>{item.id}</code></div>
+          <div className="modal-uuid">ID: <code>{item.id}</code></div>
         )}
 
         <form onSubmit={handleSubmit} className="modal-body">

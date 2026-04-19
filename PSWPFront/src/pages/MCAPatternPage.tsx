@@ -12,6 +12,7 @@ import { getMCAs, MCA } from '../api/mcas';
 import { getContractItems, ContractItem } from '../api/contractItems';
 import CrudGridPage from '../components/CrudGridPage';
 import MCAPatternModal from '../components/MCAPatternModal';
+import { createIdColumn, createUpdateTimeColumn, createUpdateUserColumn } from '../components/gridColumns';
 
 const MCAPatternPage: React.FC = () => {
   const [mcaList, setMcaList] = useState<MCA[]>([]);
@@ -23,22 +24,12 @@ const MCAPatternPage: React.FC = () => {
   }, []);
 
   const columnDefs = useMemo<ColDef<MCAPattern>[]>(() => [
-    {
-      field: 'id',
-      headerName: 'UUID',
-      width: 130,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      valueFormatter: ({ value }) => value ? String(value).substring(0, 8) + '...' : '',
-      tooltipValueGetter: ({ value }) => value,
-    },
+    createIdColumn<MCAPattern>(),
     { field: 'mcaPatternId', headerName: 'MCA Pattern ID', flex: 1.5, sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'mcaId',        headerName: 'MCA ID',         flex: 1,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'specialNotes', headerName: 'Description',    flex: 2,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateUser',   headerName: 'Update User',    width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateTime',   headerName: 'Update Time',    width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
-      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
-    },
+    createUpdateUserColumn<MCAPattern>(),
+    createUpdateTimeColumn<MCAPattern>(),
   ], []);
 
   return (

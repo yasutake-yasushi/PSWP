@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { MCAPattern, MCAPatternInput, ItemValueRow } from '../api/mcaPatterns';
 import { MCA } from '../api/mcas';
 import { ContractItem } from '../api/contractItems';
+import { MODAL_TITLES, ModalMode } from './modalShared';
 import './ContractItemModal.css';
 import './McaPatternModal.css';
-
-export type ModalMode = 'add' | 'view' | 'edit';
 
 // ---- Standalone ValueCell to avoid remount on every keystroke ----
 interface ValueCellProps {
@@ -56,8 +55,6 @@ interface Props {
 type TabKey = 'contract' | 'trade' | 'special';
 
 const ALNUM_RE = /^[A-Za-z0-9]*$/;
-const TITLE: Record<ModalMode, string> = { add: 'Add', view: 'View', edit: 'Edit' };
-
 const parseRows = (json: string): ItemValueRow[] => {
   try { return JSON.parse(json); } catch { return []; }
 };
@@ -211,12 +208,12 @@ const MCAPatternModal: React.FC<Props> = ({ mode, item, mcas, contractItemMaster
     <div className="modal-overlay">
       <div className="modal-box" style={{ width: 640 }}>
         <div className="modal-header">
-          <span>MCA Pattern — {TITLE[mode]}</span>
+          <span>MCA Pattern — {MODAL_TITLES[mode]}</span>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
         {item && mode !== 'add' && (
-          <div className="modal-uuid">UUID: <code>{item.id}</code></div>
+          <div className="modal-uuid">ID: <code>{item.id}</code></div>
         )}
 
         <form onSubmit={handleSubmit} className="modal-body">

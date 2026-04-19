@@ -10,24 +10,15 @@ import {
 } from '../api/strategies';
 import CrudGridPage from '../components/CrudGridPage';
 import StrategyModal from '../components/StrategyModal';
+import { createIdColumn, createUpdateTimeColumn, createUpdateUserColumn } from '../components/gridColumns';
 
 const StrategyPage: React.FC = () => {
   const columnDefs = useMemo<ColDef<Strategy>[]>(() => [
-    {
-      field: 'id',
-      headerName: 'UUID',
-      width: 130,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      valueFormatter: ({ value }) => value ? String(value).substring(0, 8) + '…' : '',
-      tooltipValueGetter: ({ value }) => value,
-    },
+    createIdColumn<Strategy>(),
     { field: 'strategyType', headerName: 'Strategy', flex: 1.5, sortable: true, filter: 'agSetColumnFilter',  resizable: true },
     { field: 'portId',       headerName: 'Port ID',  flex: 2,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateUser',   headerName: 'Update User', width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateTime',   headerName: 'Update Time', width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
-      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
-    },
+    createUpdateUserColumn<Strategy>(),
+    createUpdateTimeColumn<Strategy>(),
   ], []);
 
   return (

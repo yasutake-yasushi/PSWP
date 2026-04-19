@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { MailSetting, MailSettingInput, AddressRow } from '../api/mailSettings';
+import { MODAL_TITLES, ModalMode } from './modalShared';
 import './ContractItemModal.css';
 import './MailSettingModal.css';
-
-export type ModalMode = 'add' | 'view' | 'edit';
 
 interface Props {
   mode: ModalMode;
@@ -17,8 +16,6 @@ type TabKey = 'address' | 'message';
 const EVENT_TYPES = ['OTCCross', 'StockList', 'PreConfirmation'];
 const ADDRESS_KINDS: AddressRow['kind'][] = ['To', 'CC', 'BCC'];
 const ALNUM_RE = /^[A-Za-z0-9]*$/;
-const TITLE: Record<ModalMode, string> = { add: 'Add', view: 'View', edit: 'Edit' };
-
 const parseAddresses = (json: string): AddressRow[] => {
   try { return JSON.parse(json); } catch { return []; }
 };
@@ -88,12 +85,12 @@ const MailSettingModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
     <div className="modal-overlay">
       <div className="modal-box" style={{ width: 600 }}>
         <div className="modal-header">
-          <span>Mail Setting — {TITLE[mode]}</span>
+          <span>Mail Setting — {MODAL_TITLES[mode]}</span>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
         {item && mode !== 'add' && (
-          <div className="modal-uuid">UUID: <code>{item.id}</code></div>
+          <div className="modal-uuid">ID: <code>{item.id}</code></div>
         )}
 
         <form onSubmit={handleSubmit} className="modal-body">

@@ -10,18 +10,11 @@ import {
 } from '../api/mcas';
 import CrudGridPage from '../components/CrudGridPage';
 import MCAModal from '../components/MCAModal';
+import { createIdColumn, createUpdateTimeColumn, createUpdateUserColumn } from '../components/gridColumns';
 
 const MCAPage: React.FC = () => {
   const columnDefs = useMemo<ColDef<MCA>[]>(() => [
-    {
-      field: 'id',
-      headerName: 'UUID',
-      width: 130,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      valueFormatter: ({ value }) => value ? String(value).substring(0, 8) + '...' : '',
-      tooltipValueGetter: ({ value }) => value,
-    },
+    createIdColumn<MCA>(),
     { field: 'mcaId', headerName: 'MCA ID',         flex: 1, sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'cpty',  headerName: 'CPTY',           flex: 1, sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'agreementDate', headerName: 'Agreement Date', flex: 1, sortable: true, filter: 'agDateColumnFilter', resizable: true },
@@ -38,10 +31,8 @@ const MCAPage: React.FC = () => {
         catch { return value ?? ''; }
       },
     },
-    { field: 'updateUser', headerName: 'Update User', width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateTime', headerName: 'Update Time', width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
-      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
-    },
+    createUpdateUserColumn<MCA>(),
+    createUpdateTimeColumn<MCA>(),
   ], []);
 
   return (

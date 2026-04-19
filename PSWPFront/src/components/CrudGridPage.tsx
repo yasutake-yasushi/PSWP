@@ -4,11 +4,15 @@ import {
   ColDef,
   GridReadyEvent,
   ICellRendererParams,
+  ModuleRegistry,
   themeQuartz,
 } from 'ag-grid-community';
+import { AllEnterpriseModule } from 'ag-grid-enterprise';
 import ConfirmDialog from './ConfirmDialog';
+import { ModalMode } from './modalShared';
 
-export type ModalMode = 'add' | 'view' | 'edit';
+// AG Grid Enterprise は CRUD 画面利用時にだけ読み込まれるチャンク側で登録する
+ModuleRegistry.registerModules([AllEnterpriseModule]);
 
 interface ModalState<T> { open: boolean; mode: ModalMode; item?: T; }
 interface ConfirmState<T> { open: boolean; item?: T; }

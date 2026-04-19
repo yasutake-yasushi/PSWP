@@ -10,18 +10,11 @@ import {
 } from '../api/contractItems';
 import CrudGridPage from '../components/CrudGridPage';
 import ContractItemModal from '../components/ContractItemModal';
+import { createIdColumn, createUpdateTimeColumn, createUpdateUserColumn } from '../components/gridColumns';
 
 const ContractItemPage: React.FC = () => {
   const columnDefs = useMemo<ColDef<ContractItem>[]>(() => [
-    {
-      field: 'id',
-      headerName: 'UUID',
-      width: 130,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      valueFormatter: ({ value }) => value ? String(value).substring(0, 8) + '...' : '',
-      tooltipValueGetter: ({ value }) => value,
-    },
+    createIdColumn<ContractItem>(),
     { field: 'category',     headerName: 'Category',      flex: 1,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'itemName',     headerName: 'Item Name',     flex: 1.5,  sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'dataType',     headerName: 'Data Type',     width: 120, sortable: true, filter: 'agSetColumnFilter',  resizable: true },
@@ -30,10 +23,8 @@ const ContractItemPage: React.FC = () => {
     },
     { field: 'defaultValue', headerName: 'Default Value', flex: 1,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'description',  headerName: 'Description',   flex: 2,    sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateUser',   headerName: 'Update User',   width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateTime',   headerName: 'Update Time',   width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
-      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
-    },
+    createUpdateUserColumn<ContractItem>(),
+    createUpdateTimeColumn<ContractItem>(),
   ], []);
 
   return (

@@ -1,5 +1,5 @@
 
-const BASE_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:5232';
+import { apiGet, apiPut } from './http';
 
 export interface SystemSetting {
   id: number;
@@ -10,19 +10,11 @@ export interface SystemSetting {
 }
 
 export async function getSystemSetting(): Promise<SystemSetting> {
-  const res = await fetch(`${BASE_URL}/api/systemsetting`);
-  if (!res.ok) throw new Error('Failed to fetch system setting');
-  return res.json();
+  return apiGet<SystemSetting>('/api/systemsetting', 'Failed to fetch system setting');
 }
 
 export async function updateSystemSetting(
   input: Pick<SystemSetting, 'mipsFilePath' | 'strikeFilePath'>
 ): Promise<SystemSetting> {
-  const res = await fetch(`${BASE_URL}/api/systemsetting`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!res.ok) throw new Error('Failed to update system setting');
-  return res.json();
+  return apiPut<SystemSetting>('/api/systemsetting', input, 'Failed to update system setting');
 }

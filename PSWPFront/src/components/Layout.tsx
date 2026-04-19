@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { prefetchRouteChunk } from '../routes/pageLoaders';
 import './Layout.css';
 
 type LeafItem = { label: string; to: string };
@@ -83,6 +84,8 @@ const NavTree: React.FC<{ items: NavItem[]; depth?: number }> = ({ items, depth 
           <NavLink
             key={item.to}
             to={item.to}
+            onMouseEnter={() => prefetchRouteChunk(item.to)}
+            onFocus={() => prefetchRouteChunk(item.to)}
             className={({ isActive }) =>
               `nav-leaf depth-${depth}${isActive ? ' active' : ''}`
             }

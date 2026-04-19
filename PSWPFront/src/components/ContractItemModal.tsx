@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ContractItem, ContractItemInput } from '../api/contractItems';
+import { MODAL_TITLES, ModalMode } from './modalShared';
 import './ContractItemModal.css';
-
-export type ModalMode = 'add' | 'view' | 'edit';
 
 interface Props {
   mode: ModalMode;
@@ -27,12 +26,6 @@ const DATA_TYPES = ['String', 'Date', 'Int', 'Number', 'Bool', 'Enum'];
 const ALNUM_RE = /^[A-Za-z0-9]*$/;
 // 英数字・カンマ・改行のみ許可（Values用）
 const ALNUM_MULTI_RE = /^[A-Za-z0-9\n,]*$/;
-
-const TITLE: Record<ModalMode, string> = {
-  add: 'Add',
-  view: 'View',
-  edit: 'Edit',
-};
 
 const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
   const [form, setForm] = useState<ContractItemInput>(EMPTY);
@@ -86,12 +79,12 @@ const ContractItemModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => 
     <div className="modal-overlay">
       <div className="modal-box">
         <div className="modal-header">
-          <span>Contract Item — {TITLE[mode]}</span>
+          <span>Contract Item — {MODAL_TITLES[mode]}</span>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
         {item && mode !== 'add' && (
-          <div className="modal-uuid">UUID: <code>{item.id}</code></div>
+          <div className="modal-uuid">ID: <code>{item.id}</code></div>
         )}
 
         <form onSubmit={handleSubmit} className="modal-body">

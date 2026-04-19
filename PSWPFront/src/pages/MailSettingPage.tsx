@@ -10,25 +10,16 @@ import {
 } from '../api/mailSettings';
 import CrudGridPage from '../components/CrudGridPage';
 import MailSettingModal from '../components/MailSettingModal';
+import { createIdColumn, createUpdateTimeColumn, createUpdateUserColumn } from '../components/gridColumns';
 
 const MailSettingPage: React.FC = () => {
   const columnDefs = useMemo<ColDef<MailSetting>[]>(() => [
-    {
-      field: 'id',
-      headerName: 'UUID',
-      width: 130,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      valueFormatter: ({ value }) => value ? String(value).substring(0, 8) + '…' : '',
-      tooltipValueGetter: ({ value }) => value,
-    },
+    createIdColumn<MailSetting>(),
     { field: 'eventType',   headerName: 'Event Type',   flex: 1.5, sortable: true, filter: 'agSetColumnFilter',  resizable: true },
     { field: 'templateId',  headerName: 'Template ID',  flex: 1.5, sortable: true, filter: 'agTextColumnFilter', resizable: true },
     { field: 'description', headerName: 'Description',  flex: 3,   sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateUser',  headerName: 'Update User',  width: 140, sortable: true, filter: 'agTextColumnFilter', resizable: true },
-    { field: 'updateTime',  headerName: 'Update Time',  width: 180, sortable: true, filter: 'agDateColumnFilter', resizable: true,
-      valueFormatter: ({ value }) => value ? new Date(value).toLocaleString() : '',
-    },
+    createUpdateUserColumn<MailSetting>(),
+    createUpdateTimeColumn<MailSetting>(),
   ], []);
 
   return (

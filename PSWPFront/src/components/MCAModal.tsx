@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { MCA, MCAInput } from '../api/mcas';
 import ContractItemSelector from './ContractItemSelector';
+import { MODAL_TITLES, ModalMode } from './modalShared';
 import './ContractItemModal.css'; // reuse same CSS
-
-export type ModalMode = 'add' | 'view' | 'edit';
 
 interface Props {
   mode: ModalMode;
@@ -21,8 +20,6 @@ const EMPTY: MCAInput = {
 };
 
 const ALNUM_RE = /^[A-Za-z0-9]*$/;
-
-const TITLE: Record<ModalMode, string> = { add: 'Add', view: 'View', edit: 'Edit' };
 
 const MCAModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
   const [form, setForm] = useState<MCAInput>(EMPTY);
@@ -77,12 +74,12 @@ const MCAModal: React.FC<Props> = ({ mode, item, onClose, onSave }) => {
       <div className="modal-overlay">
         <div className="modal-box">
           <div className="modal-header">
-            <span>MCA — {TITLE[mode]}</span>
+            <span>MCA — {MODAL_TITLES[mode]}</span>
             <button className="modal-close" onClick={onClose}>✕</button>
           </div>
 
           {item && mode !== 'add' && (
-            <div className="modal-uuid">UUID: <code>{item.id}</code></div>
+            <div className="modal-uuid">ID: <code>{item.id}</code></div>
           )}
 
           <form onSubmit={handleSubmit} className="modal-body">
