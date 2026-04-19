@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PSWPService.Models;
 
-public class Strategy
+public class Strategy : IAuditableEntity
 {
     public int Id { get; set; }
 

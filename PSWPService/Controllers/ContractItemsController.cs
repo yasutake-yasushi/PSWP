@@ -23,7 +23,7 @@ public class ContractItemsController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var item = await _db.ContractItems.FindAsync(id);
+        var item = await _db.ContractItems.FindEntityAsync(id);
         return item is null ? NotFound() : Ok(item);
     }
 
@@ -31,8 +31,7 @@ public class ContractItemsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ContractItem item)
     {
-        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
-        item.UpdateTime = DateTime.UtcNow;
+        item.ApplyAudit(User);
         _db.ContractItems.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
@@ -42,7 +41,7 @@ public class ContractItemsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] ContractItem updated)
     {
-        var item = await _db.ContractItems.FindAsync(id);
+        var item = await _db.ContractItems.FindEntityAsync(id);
         if (item is null) return NotFound();
 
         item.Category = updated.Category;
@@ -51,8 +50,7 @@ public class ContractItemsController : ControllerBase
         item.Values = updated.Values;
         item.DefaultValue = updated.DefaultValue;
         item.Description = updated.Description;
-        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
-        item.UpdateTime = DateTime.UtcNow;
+        item.ApplyAudit(User);
 
         await _db.SaveChangesAsync();
         return Ok(item);
@@ -62,9 +60,7 @@ public class ContractItemsController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var item = await _db.ContractItems.FindAsync(id);
-        if (item is null) return NotFound();
-        _db.ContractItems.Remove(item);
+        if (!await _db.ContractItems.RemoveByIdAsync(id)) return NotFound();
         await _db.SaveChangesAsync();
         return NoContent();
     }

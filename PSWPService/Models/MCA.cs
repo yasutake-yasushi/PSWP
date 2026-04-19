@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PSWPService.Models;
 
 [Table("MCA")]
-public class MCA
+public class MCA : IAuditableEntity
 {
     public int Id { get; set; }
 

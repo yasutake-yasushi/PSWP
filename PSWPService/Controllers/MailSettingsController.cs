@@ -23,7 +23,7 @@ public class MailSettingsController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var item = await _db.MailSettings.FindAsync(id);
+        var item = await _db.MailSettings.FindEntityAsync(id);
         return item is null ? NotFound() : Ok(item);
     }
 
@@ -31,8 +31,7 @@ public class MailSettingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MailSetting item)
     {
-        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
-        item.UpdateTime = DateTime.UtcNow;
+        item.ApplyAudit(User);
         _db.MailSettings.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
@@ -42,7 +41,7 @@ public class MailSettingsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] MailSetting updated)
     {
-        var item = await _db.MailSettings.FindAsync(id);
+        var item = await _db.MailSettings.FindEntityAsync(id);
         if (item is null) return NotFound();
 
         item.EventType   = updated.EventType;
@@ -50,8 +49,7 @@ public class MailSettingsController : ControllerBase
         item.Description = updated.Description;
         item.Addresses   = updated.Addresses;
         item.Message     = updated.Message;
-        item.UpdateUser  = AuditHelper.ResolveUpdateUser(User);
-        item.UpdateTime  = DateTime.UtcNow;
+        item.ApplyAudit(User);
 
         await _db.SaveChangesAsync();
         return Ok(item);
@@ -61,9 +59,7 @@ public class MailSettingsController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var item = await _db.MailSettings.FindAsync(id);
-        if (item is null) return NotFound();
-        _db.MailSettings.Remove(item);
+        if (!await _db.MailSettings.RemoveByIdAsync(id)) return NotFound();
         await _db.SaveChangesAsync();
         return NoContent();
     }

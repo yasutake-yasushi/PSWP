@@ -23,7 +23,7 @@ public class StrategiesController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var item = await _db.Strategies.FindAsync(id);
+        var item = await _db.Strategies.FindEntityAsync(id);
         return item is null ? NotFound() : Ok(item);
     }
 
@@ -31,8 +31,7 @@ public class StrategiesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Strategy item)
     {
-        item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
-        item.UpdateTime = DateTime.UtcNow;
+        item.ApplyAudit(User);
         _db.Strategies.Add(item);
         await _db.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
@@ -42,13 +41,12 @@ public class StrategiesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] Strategy updated)
     {
-        var item = await _db.Strategies.FindAsync(id);
+        var item = await _db.Strategies.FindEntityAsync(id);
         if (item is null) return NotFound();
 
         item.StrategyType = updated.StrategyType;
         item.PortId       = updated.PortId;
-        item.UpdateUser   = AuditHelper.ResolveUpdateUser(User);
-        item.UpdateTime   = DateTime.UtcNow;
+        item.ApplyAudit(User);
 
         await _db.SaveChangesAsync();
         return Ok(item);
@@ -58,9 +56,7 @@ public class StrategiesController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var item = await _db.Strategies.FindAsync(id);
-        if (item is null) return NotFound();
-        _db.Strategies.Remove(item);
+        if (!await _db.Strategies.RemoveByIdAsync(id)) return NotFound();
         await _db.SaveChangesAsync();
         return NoContent();
     }

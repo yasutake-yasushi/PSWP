@@ -17,13 +17,12 @@ public class SystemSettingController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var item = await _db.SystemSettings.FindAsync(1);
+        var item = await _db.SystemSettings.FindEntityAsync(1);
         if (item is null)
         {
             // 初回アクセス時に空レコードを自動生成
             item = new SystemSetting { Id = 1 };
-            item.UpdateUser = AuditHelper.ResolveUpdateUser(User);
-            item.UpdateTime = DateTime.UtcNow;
+            item.ApplyAudit(User);
             _db.SystemSettings.Add(item);
             await _db.SaveChangesAsync();
         }
@@ -34,7 +33,7 @@ public class SystemSettingController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] SystemSetting updated)
     {
-        var item = await _db.SystemSettings.FindAsync(1);
+        var item = await _db.SystemSettings.FindEntityAsync(1);
         if (item is null)
         {
             item = new SystemSetting { Id = 1 };
@@ -42,8 +41,7 @@ public class SystemSettingController : ControllerBase
         }
         item.MipsFilePath   = updated.MipsFilePath;
         item.StrikeFilePath = updated.StrikeFilePath;
-        item.UpdateUser     = AuditHelper.ResolveUpdateUser(User);
-        item.UpdateTime     = DateTime.UtcNow;
+        item.ApplyAudit(User);
         await _db.SaveChangesAsync();
         return Ok(item);
     }

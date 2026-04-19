@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using PSWPService.Models;
 
 namespace PSWPService.Helpers;
 
@@ -19,5 +20,11 @@ public static class AuditHelper
             return claimName.Length <= 32 ? claimName : claimName[..32];
 
         return "anonymous";
+    }
+
+    public static void ApplyAudit(this IAuditableEntity entity, ClaimsPrincipal? user)
+    {
+        entity.UpdateUser = ResolveUpdateUser(user);
+        entity.UpdateTime = DateTime.UtcNow;
     }
 }

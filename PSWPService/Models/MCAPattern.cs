@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PSWPService.Models;
 
 [Table("MCAPatterns")]
-public class MCAPattern
+public class MCAPattern : IAuditableEntity
 {
     public int Id { get; set; }
 

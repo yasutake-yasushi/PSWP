@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PSWPService.Models;
 
-public class ContractItem
+public class ContractItem : IAuditableEntity
 {
     public int Id { get; set; }
     [MaxLength(16)]

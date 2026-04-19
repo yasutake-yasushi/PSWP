@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PSWPService.Models;
 
-public class MailSetting
+public class MailSetting : IAuditableEntity
 {
     public int Id { get; set; }
 
