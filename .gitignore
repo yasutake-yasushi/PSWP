@@ -7,6 +7,8 @@ obj/
 *.db
 *.db-shm
 *.db-wal
+TestResults/
+PSWPService.Tests/TestResults/
 
 # ===== Node.js / React =====
 node_modules/
