@@ -28,5 +28,15 @@ export default defineConfig({
     setupFiles: './src/setupTests.ts',
     include: ['tests/unit/**/*.test.{ts,tsx}'],
     exclude: ['tests/e2e/**', 'e2e/**', 'node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.d.ts',
+        'src/react-app-env.d.ts',
+      ],
+      reporter: ['text', 'html', 'cobertura'],
+      reportsDirectory: './coverage',
+    },
   },
 });

@@ -79,6 +79,19 @@ dotnet test .\PSWP.sln -c Release --settings .\PSWPService.Tests\coverlet.runset
 
 ## 5. 運用ルール
 
+## 5. カバレッジの確認方法
+
+PSWP ルートで以下を実行します。
+
+dotnet test .\PSWP.sln -c Release --settings .\PSWPService.Tests\coverlet.runsettings --logger:"junit;LogFilePath=TestResults/{assembly}.xml" --collect:"XPlat Code Coverage" --results-directory TestResults
+
+確認時の目安:
+- カバレッジXML: TestResults 配下の `coverage.cobertura.xml`
+- テスト結果XML: TestResults 配下の `*.xml`
+- 評価対象: 本README「2. テスト対象となっているコード（計測対象）」
+
+## 6. 運用ルール
+
 - カバレッジ改善の対象は、原則として「2. テスト対象となっているコード」に限定します。
 - 新しい生成コードパターンが追加された場合は、coverlet.runsettings の ExcludeByFile を更新してください。
 - 除外設定を変更した場合は、必ずこの README も同時更新してください。
