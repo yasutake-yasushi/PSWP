@@ -8,10 +8,13 @@
 PSWP/
 ├── README.md
 └── Jenkins/
-    ├── README.md            ← このファイル
-    ├── Jenkinsfile          ← Jenkins パイプライン定義
-    ├── verify.sh            ← ローカル検証スクリプト (Linux/macOS)
-    └── verify.ps1           ← ローカル検証スクリプト (Windows PowerShell)
+    ├── README.md                    ← このファイル
+    ├── Jenkinsfile                  ← Jenkins パイプライン定義
+    ├── verify.sh                    ← ローカル検証スクリプト (Linux/macOS)
+    ├── verify.ps1                   ← ローカル検証スクリプト (Windows PowerShell)
+    ├── register-scheduled-task.ps1  ← Jenkins エージェント 自動起動登録 (Windows)
+    ├── start-jenkins-agent.ps1      ← Jenkins エージェント サービス管理 (NSSM 方式)
+    └── run-jenkins-agent.ps1        ← Jenkins エージェント 起動スクリプト (自動生成)
 ```
 
 ## 🚀 クイックスタート
@@ -377,6 +380,50 @@ dotnet test PSWPService.Tests/PSWPService.Tests.csproj \
 npm run test:ci
 npm run test:e2e
 ```
+
+## 🤖 Jenkins エージェント自動起動 (Windows)
+
+Jenkins ビルドをマシン起動時に自動で実行できるよう、エージェントを Windows タスクスケジューラーに登録するスクリプトを用意しています。
+
+### セットアップ手順
+
+**管理者権限の PowerShell** で以下を実行してください:
+
+```powershell
+cd C:\Users\Yasushi\Project\PSWP\Jenkins
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+.\register-scheduled-task.ps1
+```
+
+成功すると `run-jenkins-agent.ps1`（起動スクリプト）が自動生成され、タスクスケジューラーに登録されます。
+
+### 管理コマンド
+
+```powershell
+# 今すぐ実行
+Start-ScheduledTask -TaskName 'JenkinsAgent-PSWP-Worker1'
+
+# 状態確認
+Get-ScheduledTask -TaskName 'JenkinsAgent-PSWP-Worker1' | Select-Object State, LastRunTime
+
+# タスク削除
+Unregister-ScheduledTask -TaskName 'JenkinsAgent-PSWP-Worker1' -Confirm:$false
+```
+
+### ファイルの役割
+
+| ファイル | 説明 |
+|----------|------|
+| `register-scheduled-task.ps1` | タスクスケジューラーへの登録スクリプト。管理者権限で初回のみ実行。 |
+| `run-jenkins-agent.ps1` | 実際に `java -jar agent.jar ...` を実行するスクリプト。`register-scheduled-task.ps1` が自動生成する。 |
+| `start-jenkins-agent.ps1` | NSSM を使った Windows サービス方式のスクリプト（代替手段。NSSM が必要）。 |
+| `agent.jar` | Jenkins マスターから取得したエージェント JAR ファイル。 |
+
+### 前提条件
+
+- Java がインストール済みで `java` コマンドがパスに通っていること
+- Jenkins マスターが `http://localhost:8090` で起動していること
+- `agent.jar` が `Jenkins/` フォルダに存在すること（なければ自動ダウンロード）
 
 ## 📚 参考資料
 
