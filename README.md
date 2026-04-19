@@ -113,3 +113,17 @@ dotnet build
 cd PSWPFront
 npx tsc --noEmit
 ```
+
+## テストとカバレッジ
+
+`PSWP` ルートで実行:
+
+```powershell
+dotnet test .\PSWP.sln -c Release --settings .\PSWPService.Tests\coverlet.runsettings --logger:"junit;LogFilePath=TestResults/{assembly}.xml" --collect:"XPlat Code Coverage" --results-directory TestResults
+```
+
+この設定では、カバレッジから以下を除外します。
+
+- `obj` 配下の生成コード
+- `*.g.cs`, `*.g.i.cs`, `*generated*.cs`
+- テストアセンブリ（`PSWPService.Tests`）
